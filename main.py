@@ -8,10 +8,10 @@ import random
 openai.api_key = "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"
 model_id = 'gpt-3.5-turbo'
 
-#first step
+#STEP 1
 #
 #
-#TTS engine
+#TTS engine initialisation
 engine = pyttsx3.init()
 
 #change speech rate here
@@ -23,7 +23,7 @@ voices = engine.getProperty('voices')
 #choose the voice with the voice id
 engine.setProperty('voice', voices[1].id)
 
-#1st step interaction counter
+#interaction counter counting speech recognition, not ai interaction
 interaction_counter = 0
 
 def transcribe_audio_to_text(filename):
@@ -33,8 +33,9 @@ def transcribe_audio_to_text(filename):
         try:
             return recogniser.recognise_google(audio)
         except:
-            print("skip")
-#second step
+            print("")
+            #print('Skipping unknown error')
+#STEP 2
 #
 #
 #ChatGPT input
@@ -82,3 +83,62 @@ def activate_assistant():
 
 def append_to_log(text):
     with open("chat_log.txt", "a") as f:
+        f.write(text + "\n")
+
+
+#STEP 3
+#Speech Recognition
+#infinite loop waiting for user to say call prompt
+while True:
+    print("Say 'Case' to start...")
+    recognizer = sr.Recognizer()
+    with sr.Microphone() as source:
+        audio = recognizer.listen(source)
+        try:
+            transcription = recognizer.recognize_google(audio)
+            if "case" in transcription.lower():
+                interaction_counter += 1
+
+                #record audio
+                filename = "input.wav"
+
+                readyToWork = activate_assistant()
+                speak_text(readyToWork)
+                recognizer = sr.Recognizer()
+                with sr.Microphone() as source:
+                    source.pause_threshold = 1
+                    audio = recognizer.listen(source, phrase_time_limit=None, timeout=None)
+                    with open(filename, "wb") as f:
+                        f.write(audio.get_wav_data())
+
+                        #transcribe voice to text
+                    text = transcribe_audio_to_text(filename)
+
+                    if text:
+                        print(f"You said: {text} as input")
+                        append_to_log(f"You: {text}\n")
+
+                        #STEP 4
+                        #
+                        #
+                        #generate response using GPT
+
+                        print(f"CASE says: {conversation}")
+
+                        prompt = text
+
+                        conversation.append({'role': 'user', 'content': prompt})
+                        conversation = ChatGPT_conversation(conversation)
+
+                        print('{0}: {1}\n'.format(conversation[-1]['role'].strip(), conversation[-1]['content'].strip()))
+
+                        append_to_log(f"CASE: {conversation[-1]['content'].strip()}\n")
+
+                        #STEP 5
+                        #
+                        #Text-to-Speech applied to the response
+                        speak_text(conversation[-1]['content'].strip())
+
+        except Exception as e:
+            continue
+            #print("An error
