@@ -5,7 +5,7 @@ import speech_recognition as sr
 import random
 
 #set openai gpt api key
-openai.api_key = "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"
+openai.api_key = "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"
 model_id = 'gpt-3.5-turbo'
 
 #STEP 1
