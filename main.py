@@ -41,19 +41,27 @@ for voice in voices:
 
 # Select a specific voice based on its ID or name
 # Replace 'desired_voice_name' with the name of the voice you want to use
-desired_voice_name = "Microsoft James Desktop - English (Australia)"
+desired_voice_name = "Microsoft Hazel Desktop - English (Great Britain)"
 selected_voice = None
 
 for voice in voices:
     if desired_voice_name in voice.name:
         selected_voice = voice
         break
+# Check if the desired voice was found
+if selected_voice is not None:
+    # Set the selected voice as the active voice
+    engine.setProperty('voice', selected_voice.id)
 
+    # Test the voice by saying something
+    engine.say("Augmented voice, selected.")
+    engine.runAndWait()
+    print("Selected:" + voices[0].id)
+else:
+    print(f"Voice '{desired_voice_name}' not found. Please select an available voice from the list.")
+    exit()
 
-# Choose a voice based on the voice id
-engine.setProperty('voice', voices[0].id)
-
-# Counter just for interacting purposes
+# Counter for interacting with the bot, including name calls and gpt calls
 interaction_counter = 0
 
 
@@ -74,7 +82,7 @@ def ChatGPT_conversation(conversation):
         messages=conversation
     )
     api_usage = response['usage']
-    print('Total token consumed: {0}'.format(api_usage['total_tokens']))
+    print('Total API token consumed: {0}'.format(api_usage['total_tokens']))
     conversation.append({'role': response.choices[0].message.role, 'content': response.choices[0].message.content})
     return conversation
 
@@ -166,4 +174,4 @@ while True:
 
         except Exception as e:
             continue
-            # print("An error occurred: {}".format(e))
+            print("An error occurred: {}".format(e))
