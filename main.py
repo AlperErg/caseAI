@@ -56,7 +56,7 @@ if selected_voice is not None:
     # Test the voice by saying something
     engine.say("Augmented voice, selected.")
     engine.runAndWait()
-    print("Selected:" + voices[0].id)
+    print("Selected:" + voices[1].id)
 else:
     print(f"Voice '{desired_voice_name}' not found. Please select an available voice from the list.")
     exit()
@@ -79,7 +79,9 @@ def transcribe_audio_to_text(filename):
 def ChatGPT_conversation(conversation):
     response = openai.ChatCompletion.create(
         model=model_id,
-        messages=conversation
+        messages=conversation,
+        max_tokens=4000,
+        temperature=0.5
     )
     api_usage = response['usage']
     print('Total API token consumed: {0}'.format(api_usage['total_tokens']))
@@ -171,7 +173,6 @@ while True:
                     speak_text(conversation[-1]['content'].strip())
 
                     # In future maybe a conversation.clear to decrease input tokens as the conversation evolves ...
-
         except Exception as e:
             continue
             print("An error occurred: {}".format(e))
