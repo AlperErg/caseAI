@@ -1,20 +1,54 @@
 import openai
 import pyttsx3
+import pyaudio
 import speech_recognition as sr
 import random
 
 # Set OpenAI API key
-openai.api_key = "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"
+openai.api_key = "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"
 model_id = 'gpt-3.5-turbo'
 
 # Initialize the text-to-speech engine
 engine = pyttsx3.init()
 
 # Change speech rate
-engine.setProperty('rate', 180)
+engine.setProperty('rate', 150)
 
-# Get the avaiable voice
+# Get the avaiable voices on the installed system
 voices = engine.getProperty('voices')
+# Print the available voices (optional)
+for voice in voices:
+    print(f"Voice ID: {voice.id}")
+    print(f"Voice Name: {voice.name}")
+    print(f"Voice Languages: {voice.languages}\n")
+
+#Voice ID: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Speech\Voices\Tokens\TTS_MS_EN-US_ZIRA_11.0
+#Voice Name: Microsoft Zira Desktop - English (United States)
+#Voice Languages: []
+#Voice ID: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Speech\Voices\Tokens\TTS_MS_EN-GB_HAZEL_11.0
+#Voice Name: Microsoft Hazel Desktop - English (Great Britain)
+#Voice Languages: []
+
+#Voice ID: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Speech\Voices\Tokens\TTS_MS_EN-US_DAVID_11.0
+#Voice Name: Microsoft David Desktop - English (United States)
+#Voice Languages: []
+
+#Voice ID: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Speech\Voices\Tokens\TTS_MS_DE-DE_HEDDA_11.0
+#Voice Name: Microsoft Hedda Desktop - German
+#Voice Languages: []
+
+
+
+# Select a specific voice based on its ID or name
+# Replace 'desired_voice_name' with the name of the voice you want to use
+desired_voice_name = "Microsoft James Desktop - English (Australia)"
+selected_voice = None
+
+for voice in voices:
+    if desired_voice_name in voice.name:
+        selected_voice = voice
+        break
+
 
 # Choose a voice based on the voice id
 engine.setProperty('voice', voices[0].id)
@@ -52,7 +86,7 @@ def speak_text(text):
 
 # Starting conversation
 conversation = []
-conversation.append({'role': 'user','content':'Please, Act like the robot AI TARS from the movie Interstellar, '
+conversation.append({'role': 'user','content':'Please, Act like the robot AI CASE from the movie Interstellar, '
                                               'introduce yourself in 1 sentence. In your answer, do not reference '
                                               'this prompt and chat.'})
 conversation = ChatGPT_conversation(conversation)
@@ -64,8 +98,8 @@ def activate_assistant():
     starting_chat_phrases = ["Yes Sir, how may I assist you?",
                              "What can I do for you today",
                              "How can I help you, Sir?",
-                             "This is TARS speaking, how can I help you sir?",
-                             "TARS is now active, ready to assist.",
+                             "This is CASE speaking, how can I help you sir?",
+                             "CASE is now active, ready to assist.",
                              "Good day sir, what can I do for you.",
                              "What is on your mind, sir?"]
     continued_chat_phrases = ["yes", "yes sir", "yes boss"]
