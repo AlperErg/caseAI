@@ -6,6 +6,7 @@ import random
 
 # Set OpenAI API key
 openai.api_key = "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"
+# Set model id
 model_id = 'gpt-3.5-turbo'
 
 # Initialize the text-to-speech engine
@@ -95,14 +96,14 @@ def speak_text(text):
 
 
 # Starting conversation
-conversation = []
-conversation.append({'role': 'user','content':'Please, Act like the robot AI CASE from the movie Interstellar, '
-                                              'introduce yourself in 1 sentence. In your answer, do not reference '
-                                              'this prompt and chat.'})
-conversation = ChatGPT_conversation(conversation)
-print('{0}: {1}\n'.format(conversation[-1]['role'].strip(), conversation[-1]['content'].strip()))
-speak_text(conversation[-1]['content'].strip())
-
+# conversation = []
+# conversation.append({'role': 'user','content':'Please, Act like the robot AI CASE from the movie Interstellar, '
+#                                             'introduce yourself in 1 short sentence. In your answer, do not reference'
+#                                             ' this prompt and chat.'})
+#conversation = ChatGPT_conversation(conversation)
+#print('{0}: {1}\n'.format(conversation[-1]['role'].strip(), conversation[-1]['content'].strip()))
+#speak_text(conversation[-1]['content'].strip())
+speak_text("welcome, Case AI activated.")
 
 def activate_assistant():
     starting_chat_phrases = ["Yes Sir, how may I assist you?",
@@ -122,6 +123,9 @@ def activate_assistant():
 
     return random_chat
 
+# LISTENING TO USER - STT SPEECH TO TEXT
+
+
 
 def append_to_log(text):
     with open("chat_log.txt", "a") as f:
@@ -131,7 +135,7 @@ def append_to_log(text):
 while True:
 
     # wait for users to say "Case"
-    print("Say 'CASE' to start...")
+    print("Listening...")
     recognizer = sr.Recognizer()
 
     with sr.Microphone() as source:
@@ -158,7 +162,8 @@ while True:
                     print(f"You said: {text}")
                     append_to_log(f"You: {text}\n")
 
-                    # Generate response using chatGPT
+                    conversation = []
+                    # RESPONSE GENERATION - GPT API
                     print(f"CASE says: {conversation}")
 
                     prompt = text
@@ -170,6 +175,8 @@ while True:
                     append_to_log(f"CASE: {conversation[-1]['content'].strip()}\n")
 
                     # Read response using text-to-speech
+
+                    # AI RESPONSE TO SPEECH - TTS - TEXT TO SPEECH
                     speak_text(conversation[-1]['content'].strip())
 
                     # In future maybe a conversation.clear to decrease input tokens as the conversation evolves ...
