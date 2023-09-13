@@ -1,8 +1,20 @@
 import openai
 import pyttsx3
-import pyaudio
 import speech_recognition as sr
 import random
+from gtts import gTTS
+import pyaudio
+import wave
+import pygame
+
+# initialise pygame
+pygame.mixer.init()
+
+
+def playtts():
+    pygame.mixer.music.load("welcome.mp3")
+    pygame.mixer.music.play()
+
 
 # Set OpenAI API key
 openai.api_key = "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"
@@ -14,6 +26,7 @@ engine = pyttsx3.init()
 
 # Change speech rate
 engine.setProperty('rate', 150)
+engine.setProperty('voice', "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Speech\Voices\Tokens\TTS_MS_EN-GB_HAZEL_11.0")
 
 # Get the avaiable voices on the installed system
 voices = engine.getProperty('voices')
@@ -22,45 +35,6 @@ for voice in voices:
     print(f"Voice ID: {voice.id}")
     print(f"Voice Name: {voice.name}")
     print(f"Voice Languages: {voice.languages}\n")
-
-#Voice ID: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Speech\Voices\Tokens\TTS_MS_EN-US_ZIRA_11.0
-#Voice Name: Microsoft Zira Desktop - English (United States)
-#Voice Languages: []
-#Voice ID: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Speech\Voices\Tokens\TTS_MS_EN-GB_HAZEL_11.0
-#Voice Name: Microsoft Hazel Desktop - English (Great Britain)
-#Voice Languages: []
-
-#Voice ID: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Speech\Voices\Tokens\TTS_MS_EN-US_DAVID_11.0
-#Voice Name: Microsoft David Desktop - English (United States)
-#Voice Languages: []
-
-#Voice ID: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Speech\Voices\Tokens\TTS_MS_DE-DE_HEDDA_11.0
-#Voice Name: Microsoft Hedda Desktop - German
-#Voice Languages: []
-
-
-
-# Select a specific voice based on its ID or name
-# Replace 'desired_voice_name' with the name of the voice you want to use
-desired_voice_name = "Microsoft Hazel Desktop - English (Great Britain)"
-selected_voice = None
-
-for voice in voices:
-    if desired_voice_name in voice.name:
-        selected_voice = voice
-        break
-# Check if the desired voice was found
-if selected_voice is not None:
-    # Set the selected voice as the active voice
-    engine.setProperty('voice', selected_voice.id)
-
-    # Test the voice by saying something
-    engine.say("Augmented voice, selected.")
-    engine.runAndWait()
-    print("Selected:" + voices[1].id)
-else:
-    print(f"Voice '{desired_voice_name}' not found. Please select an available voice from the list.")
-    exit()
 
 # Counter for interacting with the bot, including name calls and gpt calls
 interaction_counter = 0
@@ -95,15 +69,23 @@ def speak_text(text):
     engine.runAndWait()
 
 
+def text_to_speech(text):
+    tts = gTTS(text, lang='en', slow=False)
+    tts.save("welcome.mp3")
+    playtts()
+
+
+text_to_speech("Hello, google here")
 # Starting conversation
 # conversation = []
 # conversation.append({'role': 'user','content':'Please, Act like the robot AI CASE from the movie Interstellar, '
 #                                             'introduce yourself in 1 short sentence. In your answer, do not reference'
 #                                             ' this prompt and chat.'})
-#conversation = ChatGPT_conversation(conversation)
-#print('{0}: {1}\n'.format(conversation[-1]['role'].strip(), conversation[-1]['content'].strip()))
-#speak_text(conversation[-1]['content'].strip())
+# conversation = ChatGPT_conversation(conversation)
+# print('{0}: {1}\n'.format(conversation[-1]['role'].strip(), conversation[-1]['content'].strip()))
+# speak_text(conversation[-1]['content'].strip())
 speak_text("welcome, Case AI activated.")
+
 
 def activate_assistant():
     starting_chat_phrases = ["Yes Sir, how may I assist you?",
@@ -123,8 +105,8 @@ def activate_assistant():
 
     return random_chat
 
-# LISTENING TO USER - STT SPEECH TO TEXT
 
+# LISTENING TO USER - STT SPEECH TO TEXT
 
 
 def append_to_log(text):
@@ -181,5 +163,5 @@ while True:
 
                     # In future maybe a conversation.clear to decrease input tokens as the conversation evolves ...
         except Exception as e:
-            continue
             print("An error occurred: {}".format(e))
+            continue
