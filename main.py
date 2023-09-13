@@ -7,12 +7,13 @@ import pyaudio
 import wave
 import pygame
 
+
 # initialise pygame
 pygame.mixer.init()
 
 
-def playtts():
-    pygame.mixer.music.load("welcome.mp3")
+def playtts(file):
+    pygame.mixer.music.load(file)
     pygame.mixer.music.play()
 
 
@@ -72,8 +73,19 @@ def speak_text(text):
 def text_to_speech(text):
     tts = gTTS(text, lang='en', slow=False)
     tts.save("welcome.mp3")
-    playtts()
+    playtts("welcome.mp3")
 
+
+def text_to_speech2(text):
+    tts = gTTS(text, lang='en', slow=False)
+    tts.save("welcome2.mp3")
+    playtts("welcome2.mp3")
+
+
+def text_to_speech3(text):
+    tts = gTTS(text, lang='en', slow=False)
+    tts.save("welcome3.mp3")
+    playtts("welcome3.mp3")
 
 # Starting conversation
 # conversation = []
@@ -128,7 +140,7 @@ while True:
                 # Record audio
                 filename = "input.wav"
                 readyToWork = activate_assistant()
-                text_to_speech(readyToWork)
+                text_to_speech2(readyToWork)
                 print(readyToWork)
                 recognizer = sr.Recognizer()
                 with sr.Microphone() as source:
@@ -158,7 +170,7 @@ while True:
                     # Read response using text-to-speech
 
                     # AI RESPONSE TO SPEECH - TTS - TEXT TO SPEECH
-                    text_to_speech(conversation[-1]['content'].strip())
+                    text_to_speech3(conversation[-1]['content'].strip())
 
                     # In future maybe a conversation.clear to decrease input tokens as the conversation evolves ...
         except Exception as e:
