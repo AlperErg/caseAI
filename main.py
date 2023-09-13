@@ -75,7 +75,6 @@ def text_to_speech(text):
     playtts()
 
 
-text_to_speech("Hello, google here")
 # Starting conversation
 # conversation = []
 # conversation.append({'role': 'user','content':'Please, Act like the robot AI CASE from the movie Interstellar, '
@@ -84,7 +83,7 @@ text_to_speech("Hello, google here")
 # conversation = ChatGPT_conversation(conversation)
 # print('{0}: {1}\n'.format(conversation[-1]['role'].strip(), conversation[-1]['content'].strip()))
 # speak_text(conversation[-1]['content'].strip())
-speak_text("welcome, Case AI activated.")
+text_to_speech("welcome, Case AI activated.")
 
 
 def activate_assistant():
@@ -129,7 +128,7 @@ while True:
                 # Record audio
                 filename = "input.wav"
                 readyToWork = activate_assistant()
-                speak_text(readyToWork)
+                text_to_speech(readyToWork)
                 print(readyToWork)
                 recognizer = sr.Recognizer()
                 with sr.Microphone() as source:
@@ -159,7 +158,7 @@ while True:
                     # Read response using text-to-speech
 
                     # AI RESPONSE TO SPEECH - TTS - TEXT TO SPEECH
-                    speak_text(conversation[-1]['content'].strip())
+                    text_to_speech(conversation[-1]['content'].strip())
 
                     # In future maybe a conversation.clear to decrease input tokens as the conversation evolves ...
         except Exception as e:
