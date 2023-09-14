@@ -6,11 +6,14 @@ from gtts import gTTS
 import pyaudio
 import wave
 import pygame
+import os
+import time
+
+os.environ['OPENAI_API_KEY'] = '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'
 
 
 # initialise pygame
 pygame.mixer.init()
-
 
 def playtts(file):
     pygame.mixer.music.load(file)
@@ -46,7 +49,7 @@ def transcribe_audio_to_text(filename):
     with sr.AudioFile(filename) as source:
         audio = recognizer.record(source)
         try:
-            return recognizer.recognize_google(audio)
+            return recognizer.recognize_whisper_api(audio)
         except:
             print("")
             # print('Skipping unknown error')
@@ -134,7 +137,7 @@ while True:
     with sr.Microphone() as source:
         audio = recognizer.listen(source)
         try:
-            transcription = recognizer.recognize_google(audio)
+            transcription = recognizer.recognize_whisper_api(audio)
             if "case" in transcription.lower():
                 interaction_counter += 1
                 # Record audio
@@ -145,26 +148,25 @@ while True:
                 recognizer = sr.Recognizer()
                 with sr.Microphone() as source:
                     source.pause_threshold = 1
-                    audio = recognizer.listen(source, phrase_time_limit=None, timeout=None)
+                    audio = recognizer.listen(source, timeout=30)
                     with open(filename, "wb") as f:
                         f.write(audio.get_wav_data())
 
                 # Transcribe audio to text
                 text = transcribe_audio_to_text(filename)
+                print(f"You said: {text}")
+                append_to_log(f"You: {text}\n")
                 if text:
-                    print(f"You said: {text}")
-                    append_to_log(f"You: {text}\n")
 
                     conversation = []
                     # RESPONSE GENERATION - GPT API
-                    print(f"CASE says: {conversation}")
 
                     prompt = text
                     conversation.append({'role': 'user', 'content': prompt})
                     conversation = ChatGPT_conversation(conversation)
 
                     print('{0}: {1}\n'.format(conversation[-1]['role'].strip(), conversation[-1]['content'].strip()))
-
+                    print(f"CASE says: {conversation}")
                     append_to_log(f"CASE: {conversation[-1]['content'].strip()}\n")
 
                     # Read response using text-to-speech
@@ -174,5 +176,5 @@ while True:
 
                     # In future maybe a conversation.clear to decrease input tokens as the conversation evolves ...
         except Exception as e:
-            print("An error occurred: {}".format(e))
+            print("An error occurred: {}".format(e) + "No phrase was recognised.")
             continue
