@@ -1,10 +1,8 @@
 import openai
-import pyttsx3
 import speech_recognition as sr
 import random
 from gtts import gTTS
 import pyaudio
-import wave
 import pygame
 import os
 import time
@@ -14,34 +12,19 @@ os.environ['OPENAI_API_KEY'] = 'sk-Zs65mIXicUVbWsfzAttCT3BlbkFJxYN6cQS0BCMRHAuJb
 
 # initialise pygame
 pygame.mixer.init()
+# Microsoft API key
+bingkey = "0ac803691b254f76a1e3fd666855bfcb"
+# Set OpenAI API key
+openai.api_key = "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"
+# Set OpenAI model id
+model_id = 'gpt-3.5-turbo'
+# Counter for interacting with the bot, including name calls and gpt calls
+interaction_counter = 0
+
 
 def playtts(file):
     pygame.mixer.music.load(file)
     pygame.mixer.music.play()
-
-
-# Set OpenAI API key
-openai.api_key = "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"
-# Set model id
-model_id = 'gpt-3.5-turbo'
-
-# Initialize the text-to-speech engine
-engine = pyttsx3.init()
-
-# Change speech rate
-engine.setProperty('rate', 150)
-engine.setProperty('voice', "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Speech\Voices\Tokens\TTS_MS_EN-GB_HAZEL_11.0")
-
-# Get the avaiable voices on the installed system
-voices = engine.getProperty('voices')
-# Print the available voices (optional)
-for voice in voices:
-    print(f"Voice ID: {voice.id}")
-    print(f"Voice Name: {voice.name}")
-    print(f"Voice Languages: {voice.languages}\n")
-
-# Counter for interacting with the bot, including name calls and gpt calls
-interaction_counter = 0
 
 
 def transcribe_audio_to_text(filename):
@@ -68,11 +51,6 @@ def ChatGPT_conversation(conversation):
     return conversation
 
 
-def speak_text(text):
-    engine.say(text)
-    engine.runAndWait()
-
-
 def text_to_speech(text):
     tts = gTTS(text, lang='en', slow=False)
     tts.save("welcome.mp3")
@@ -90,15 +68,14 @@ def text_to_speech3(text):
     tts.save("welcome3.mp3")
     playtts("welcome3.mp3")
 
-# Starting conversation
+# Conversation example
 # conversation = []
 # conversation.append({'role': 'user','content':'Please, Act like the robot AI CASE from the movie Interstellar, '
 #                                             'introduce yourself in 1 short sentence. In your answer, do not reference'
 #                                             ' this prompt and chat.'})
 # conversation = ChatGPT_conversation(conversation)
 # print('{0}: {1}\n'.format(conversation[-1]['role'].strip(), conversation[-1]['content'].strip()))
-# speak_text(conversation[-1]['content'].strip())
-text_to_speech("welcome, Case AI activated.")
+# text_to_speech(conversation[-1]['content'].strip())
 
 
 def activate_assistant():
@@ -128,23 +105,26 @@ def append_to_log(text):
         f.write(text + "\n")
 
 
+text_to_speech("welcome, Case AI activated.")
+time.sleep(3)
 while True:
 
     # wait for users to say "Case"
     print("Listening...")
     recognizer = sr.Recognizer()
-
     with sr.Microphone() as source:
         audio = recognizer.listen(source)
         try:
             transcription = recognizer.recognize_whisper_api(audio)
             if "case" in transcription.lower():
                 interaction_counter += 1
-                # Record audio
                 filename = "input.wav"
                 readyToWork = activate_assistant()
                 text_to_speech2(readyToWork)
                 print(readyToWork)
+                time.sleep(4)
+                print("waited 4 seconds for readyToWork to end")
+                # Record audio
                 recognizer = sr.Recognizer()
                 with sr.Microphone() as source:
                     source.pause_threshold = 1
@@ -173,8 +153,11 @@ while True:
 
                     # AI RESPONSE TO SPEECH - TTS - TEXT TO SPEECH
                     text_to_speech3(conversation[-1]['content'].strip())
+            else:
+                print("Could not recognize")
+
 
                     # In future maybe a conversation.clear to decrease input tokens as the conversation evolves ...
         except Exception as e:
-            print("An error occurred: {}".format(e) + "No phrase was recognised.")
+            print("An error occurred: {}".format(e))
             continue
