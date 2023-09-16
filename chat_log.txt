@@ -249,3 +249,15 @@ CASE: Why did Ada bring a ladder to the bar?
 
 Because she heard the drinks were on the house!
 
+You: Joke with the name Arda in it.
+
+CASE: Why did Arda bring a ladder to the bar?
+
+Because he wanted to raise the bar!
+
+You: None
+
+You: Is it okay for a brother to steal money from his older brother?
+
+CASE: No, it is not okay for a brother to steal money from his older brother or from anyone else. Stealing is generally considered morally wrong and can damage trust and relationships. It is important to respect other people's belongings and rights, and to find alternative and ethical ways to address financial issues or conflicts.
+

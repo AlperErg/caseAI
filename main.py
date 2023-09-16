@@ -9,7 +9,8 @@ import time
 
 os.environ['OPENAI_API_KEY'] = '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'
 
-
+# seconds to wait after tts is initiated
+waitSec = 2
 # initialise pygame
 pygame.mixer.init()
 # Microsoft API key
@@ -122,8 +123,8 @@ while True:
                 readyToWork = activate_assistant()
                 text_to_speech2(readyToWork)
                 print(readyToWork)
-                time.sleep(4)
-                print("waited 4 seconds for readyToWork to end")
+                time.sleep(waitSec)
+                print("waited" + str(waitSec) + "seconds for readyToWork to end")
                 # Record audio
                 recognizer = sr.Recognizer()
                 with sr.Microphone() as source:
