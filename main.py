@@ -7,9 +7,26 @@ import speech_recognition as sr
 from gtts import gTTS
 import pyaudio
 import pygame
-from flask import Flask
-
+from flask import Flask, jsonify, render_template
+# Flask Code
 app = Flask(__name__)
+
+
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+
+@app.route('/run_python_code')
+def run_python_code():
+    # Your Python code to execute when the button is clicked
+    result = "Python code executed successfully"
+    return jsonify({'message': result})
+
+
+if __name__ == '__main__':
+    app.run()
+# END OF FLASK CODE
 
 os.environ['OPENAI_API_KEY'] = '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'
 
