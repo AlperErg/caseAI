@@ -1,11 +1,15 @@
+import random
+import os
+import time
+# External Libraries that need to be installed on the device
 import openai
 import speech_recognition as sr
-import random
 from gtts import gTTS
 import pyaudio
 import pygame
-import os
-import time
+from flask import Flask
+
+app = Flask(__name__)
 
 os.environ['OPENAI_API_KEY'] = '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'
 
