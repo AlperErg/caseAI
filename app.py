@@ -8,28 +8,9 @@ from gtts import gTTS
 import pyaudio
 import pygame
 from flask import Flask, jsonify, render_template
-# Flask Code
-app = Flask(__name__)
 
-
-@app.route('/')
-def index():
-    return render_template('index.html')
-
-
-@app.route('/run_python_code')
-def run_python_code():
-    # Your Python code to execute when the button is clicked
-    result = "Python code executed successfully"
-    return jsonify({'message': result})
-
-
-if __name__ == '__main__':
-    app.run()
-# END OF FLASK CODE
-
+# openai api key for whisper speech recognition api
 os.environ['OPENAI_API_KEY'] = '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'
-
 # seconds to wait after tts is initiated
 waitSec = 2
 # initialise pygame
@@ -127,59 +108,82 @@ def append_to_log(text):
         f.write(text + "\n")
 
 
-text_to_speech("welcome, Case AI activated.")
-time.sleep(3)
-while True:
+def activate_case():
+    interaction_counter = 0
+    text_to_speech("welcome, Case AI activated.")
+    time.sleep(3)
+    while True:
+        # wait for users to say "Case"
+        print("Listening...")
+        recognizer = sr.Recognizer()
+        with sr.Microphone() as source:
+            audio = recognizer.listen(source)
+            try:
+                transcription = recognizer.recognize_whisper_api(audio)
+                if "case" in transcription.lower():
+                    interaction_counter += 1
+                    filename = "input.wav"
+                    readyToWork = activate_assistant()
+                    text_to_speech2(readyToWork)
+                    print(readyToWork)
+                    time.sleep(waitSec)
+                    print("waited" + str(waitSec) + "seconds for readyToWork to end")
+                    # Record audio
+                    recognizer = sr.Recognizer()
+                    with sr.Microphone() as source:
+                        source.pause_threshold = 1
+                        audio = recognizer.listen(source, timeout=30)
+                        with open(filename, "wb") as f:
+                            f.write(audio.get_wav_data())
 
-    # wait for users to say "Case"
-    print("Listening...")
-    recognizer = sr.Recognizer()
-    with sr.Microphone() as source:
-        audio = recognizer.listen(source)
-        try:
-            transcription = recognizer.recognize_whisper_api(audio)
-            if "case" in transcription.lower():
-                interaction_counter += 1
-                filename = "input.wav"
-                readyToWork = activate_assistant()
-                text_to_speech2(readyToWork)
-                print(readyToWork)
-                time.sleep(waitSec)
-                print("waited" + str(waitSec) + "seconds for readyToWork to end")
-                # Record audio
-                recognizer = sr.Recognizer()
-                with sr.Microphone() as source:
-                    source.pause_threshold = 1
-                    audio = recognizer.listen(source, timeout=30)
-                    with open(filename, "wb") as f:
-                        f.write(audio.get_wav_data())
+                    # Transcribe audio to text
+                    text = transcribe_audio_to_text(filename)
+                    print(f"You said: {text}")
+                    append_to_log(f"You: {text}\n")
+                    if text:
 
-                # Transcribe audio to text
-                text = transcribe_audio_to_text(filename)
-                print(f"You said: {text}")
-                append_to_log(f"You: {text}\n")
-                if text:
+                        conversation = []
+                        # RESPONSE GENERATION - GPT API
 
-                    conversation = []
-                    # RESPONSE GENERATION - GPT API
+                        prompt = text
+                        conversation.append({'role': 'user', 'content': prompt})
+                        conversation = ChatGPT_conversation(conversation)
 
-                    prompt = text
-                    conversation.append({'role': 'user', 'content': prompt})
-                    conversation = ChatGPT_conversation(conversation)
+                        print('{0}: {1}\n'.format(conversation[-1]['role'].strip(), conversation[-1]['content'].strip()))
+                        print(f"CASE says: {conversation}")
+                        append_to_log(f"CASE: {conversation[-1]['content'].strip()}\n")
 
-                    print('{0}: {1}\n'.format(conversation[-1]['role'].strip(), conversation[-1]['content'].strip()))
-                    print(f"CASE says: {conversation}")
-                    append_to_log(f"CASE: {conversation[-1]['content'].strip()}\n")
+                        # Read response using text-to-speech
 
-                    # Read response using text-to-speech
-
-                    # AI RESPONSE TO SPEECH - TTS - TEXT TO SPEECH
-                    text_to_speech3(conversation[-1]['content'].strip())
-            else:
-                print("Could not recognize")
+                        # AI RESPONSE TO SPEECH - TTS - TEXT TO SPEECH
+                        text_to_speech3(conversation[-1]['content'].strip())
+                else:
+                    print("Could not recognize")
 
 
-                    # In future maybe a conversation.clear to decrease input tokens as the conversation evolves ...
-        except Exception as e:
-            print("An error occurred: {}".format(e))
-            continue
+                        # In future maybe a conversation.clear to decrease input tokens as the conversation evolves ...
+            except Exception as e:
+                print("An error occurred: {}".format(e))
+                continue
+
+
+# Flask Code
+app = Flask(__name__)
+
+
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+
+@app.route('/run_python_code')
+def run_python_code():
+    # Your Python function to execute when the button is clicked
+    activate_case()
+    result = "Python code executed successfully"
+    return jsonify({'message': result})
+
+
+if __name__ == '__main__':
+    app.run()
+# END OF FLASK CODE
