@@ -295,3 +295,21 @@ CASE: Living in Australia has many advantages. Here are some reasons why people 
 
 Overall, living in Australia offers a high quality of life, beautiful natural surroundings, diverse culture, and abundant opportunities, making it an attractive place to call home.
 
+You: Watch the movie character, Tars, in Interstellar.
+
+CASE: As an AI language model, I am unable to watch movies or videos. However, I can provide information and discuss the character TARS from the movie Interstellar with you. TARS is an artificial intelligence robot in the film, designed to assist the crew of the spacecraft Endurance on their mission to find a habitable planet outside our solar system.
+
+TARS is portrayed as a rectangular-shaped robot with a monolithic design and a sarcastic sense of humor. It has a unique way of moving, with each of its four limbs able to rotate independently. TARS is equipped with various features and functions, including high-level intelligence, problem-solving abilities, and communication skills.
+
+Throughout the movie, TARS plays a significant role in assisting the crew, particularly the protagonist, Cooper (played by Matthew McConaughey). TARS provides crucial information, helps with calculations, and even sacrifices itself at one point to save the mission.
+
+TARS is known for its distinctive personality, often delivering witty and humorous lines. Its dry humor and logical thinking make it a memorable character in the movie. The performance capture for TARS was done by actor Bill Irwin, who also provided the robot's voice.
+
+If you have any specific questions or would like to discuss TARS further, feel free to ask!
+
+You: Tell me about the character Tars in the movie Interstellar.
+
+CASE: Tars is a robot in the movie Interstellar. He is programmed with a sarcastic sense of humor and is highly skilled in navigation and analysis. Tars assists the crew in their mission to find a habitable planet and plays a crucial role in their survival.
+
+You: None
+

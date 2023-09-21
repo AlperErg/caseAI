@@ -73,7 +73,7 @@ def text_to_speech3(text):
 
 # Conversation example
 # conversation = []
-# conversation.append({'role': 'user','content':'Please, Act like the robot AI CASE from the movie Interstellar, '
+# conversation.append({'role': 'user','content':'Please, Act like the robot AI TARS from the movie Interstellar, '
 #                                             'introduce yourself in 1 short sentence. In your answer, do not reference'
 #                                             ' this prompt and chat.'})
 # conversation = ChatGPT_conversation(conversation)
@@ -85,11 +85,11 @@ def activate_assistant():
     starting_chat_phrases = ["Yes Sir, how may I assist you?",
                              "What can I do for you today",
                              "How can I help you, Sir?",
-                             "This is CASE speaking, how can I help you sir?",
-                             "CASE is now active, ready to assist.",
+                             "This is TARS speaking, how can I help you sir?",
+                             "TARS is now active, ready to assist.",
                              "Good day sir, what can I do for you.",
                              "What is on your mind, sir?"]
-    continued_chat_phrases = ["yes", "yes sir", "yes boss"]
+    continued_chat_phrases = ["yes?", "yes sir", "yes boss"]
 
     random_chat = ""
     if (interaction_counter == 1):
@@ -110,7 +110,7 @@ def append_to_log(text):
 
 def activate_case():
     interaction_counter = 0
-    text_to_speech("welcome, Case AI activated.")
+    text_to_speech("welcome, TARS AI activated.")
     time.sleep(3)
     while True:
         # wait for users to say "Case"
@@ -120,12 +120,12 @@ def activate_case():
             audio = recognizer.listen(source)
             try:
                 transcription = recognizer.recognize_whisper_api(audio)
-                if "case" in transcription.lower():
-                    interaction_counter += 1
+                if "tars" in transcription.lower():
                     filename = "input.wav"
                     readyToWork = activate_assistant()
                     text_to_speech2(readyToWork)
                     print(readyToWork)
+                    interaction_counter += 1
                     time.sleep(waitSec)
                     print("waited" + str(waitSec) + "seconds for readyToWork to end")
                     # Record audio
@@ -145,7 +145,7 @@ def activate_case():
                         conversation = []
                         # RESPONSE GENERATION - GPT API
 
-                        prompt = text
+                        prompt = text + ". Make your answer at most 4 sentences long, prioritise giving only the most critical information related to my prompt when shortening your answer, and do not reference this instruction about conciseness in your answer."
                         conversation.append({'role': 'user', 'content': prompt})
                         conversation = ChatGPT_conversation(conversation)
 
