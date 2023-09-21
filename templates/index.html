@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Execute Python Code</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css">
+    <style>
+        /* Add your custom styles here */
+        .navbar {
+            background-color: #333;
+        }
+
+        .navbar-brand {
+            color: #fff;
+            font-size: 24px;
+        }
+
+        .navbar-toggler-icon {
+            background-color: #fff;
+        }
+
+        .navbar-nav {
+            margin-right: 10px;
+        }
+
+        .navbar-nav .nav-item {
+            margin-right: 15px;
+        }
+
+        /* Add your custom animation styles here */
+        .dropdown-menu {
+            animation: fadeInDown 0.5s;
+        }
+
+        @keyframes fadeInDown {
+            0% {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!--Header with Bootstrap-->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <a class="navbar-brand" href="#">CaseAI</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Home</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Dropdown
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                        <a class="dropdown-item" href="#">Option 1</a>
+                        <a class="dropdown-item" href="#">Option 2</a>
+                        <a class="dropdown-item" href="#">Option 3</a>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">About</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Contact</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!--Body-->
+
+    </div>
+    <div class="container h-100">
+        <!-- Center content both horizontally and vertically -->
+        <div class="row h-100 justify-content-center align-items-center">
+            <div class="col-md-10 text-center">
+                <h1>Execute Existing Python Code</h1>
+                <button id="executeButton">Run Code</button>
+                <p id="resultMessage"></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('executeButton').addEventListener('click', function() {
+            // Send a request to the Flask endpoint
+            fetch('/run_python_code')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('resultMessage').textContent = data.message;
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        });
+    </script>
+     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script> 
+</body>
+</html>
