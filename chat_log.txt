@@ -313,3 +313,15 @@ CASE: Tars is a robot in the movie Interstellar. He is programmed with a sarcast
 
 You: None
 
+You: How can I set up a trust in the Bahamas? Tell me the long way.
+
+CASE: To set up a trust in the Bahamas, follow these steps: 1) Choose a trustee who must be a Bahamian resident or a licensed financial institution in the Bahamas. 2) Draft a trust deed outlining the terms and conditions of the trust. 3) Register the trust deed with the Bahamas Financial Services Board. 4) Transfer the assets to the trustee to establish the trust.
+
+You: Tell me how I can set up a trust in the Bahamas longer than four sentences.
+
+CASE: To set up a trust in the Bahamas, you need to follow these steps: 1) Choose a trustee who will manage the trust assets, 2) Draft a trust deed that outlines the terms and conditions of the trust, 3) Register the trust with the Bahamas Financial Services Board, and 4) Transfer the assets into the trust. It is recommended to consult with a legal professional for guidance throughout the process.
+
+You: None
+
+You: None
+

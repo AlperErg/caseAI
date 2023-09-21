@@ -1,3 +1,4 @@
 *.mp3
 *.wav
 __pycache__/
+chat_log.txt
