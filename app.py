@@ -22,7 +22,7 @@ openai.api_key = "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"
 # Set OpenAI model id
 model_id = 'gpt-3.5-turbo'
 # Counter for interacting with the bot, including name calls and gpt calls
-interaction_counter = 0
+
 
 
 def playtts(file):
@@ -80,7 +80,7 @@ def text_to_speech3(text):
 # print('{0}: {1}\n'.format(conversation[-1]['role'].strip(), conversation[-1]['content'].strip()))
 # text_to_speech(conversation[-1]['content'].strip())
 
-
+interaction_counter = 1
 def activate_assistant():
     starting_chat_phrases = ["Yes Sir, how may I assist you?",
                              "What can I do for you today",
@@ -92,15 +92,14 @@ def activate_assistant():
     continued_chat_phrases = ["yes?", "yes sir", "yes boss"]
 
     random_chat = ""
-    if (interaction_counter == 1):
+    if (interaction_counter <= 1):
         random_chat = random.choice(starting_chat_phrases)
-    else:
+    if (interaction_counter > 1):
         random_chat = random.choice(continued_chat_phrases)
+    else:
+        print("Interaction counter error")
 
     return random_chat
-
-
-# LISTENING TO USER - STT SPEECH TO TEXT
 
 
 def append_to_log(text):
@@ -108,11 +107,13 @@ def append_to_log(text):
         f.write(text + "\n")
 
 
+# Function right at the Cognitive Complexity limit of 15.
 def activate_case():
-    interaction_counter = 0
+    loop_function = 1
+    loop_threshold = 2 # tries to recognise voice this many times
     text_to_speech("welcome, TARS AI activated.")
     time.sleep(3)
-    while True:
+    while loop_function <= loop_threshold:
         # wait for users to say "Case"
         print("Listening...")
         recognizer = sr.Recognizer()
@@ -125,7 +126,6 @@ def activate_case():
                     readyToWork = activate_assistant()
                     text_to_speech2(readyToWork)
                     print(readyToWork)
-                    interaction_counter += 1
                     time.sleep(waitSec)
                     print("waited" + str(waitSec) + "seconds for readyToWork to end")
                     # Record audio
@@ -150,21 +150,24 @@ def activate_case():
                         conversation = ChatGPT_conversation(conversation)
 
                         print('{0}: {1}\n'.format(conversation[-1]['role'].strip(), conversation[-1]['content'].strip()))
-                        print(f"CASE says: {conversation}")
+                        print(f"CASE says: {conversation[-1]['content'].strip()}")
                         append_to_log(f"CASE: {conversation[-1]['content'].strip()}\n")
 
                         # Read response using text-to-speech
 
                         # AI RESPONSE TO SPEECH - TTS - TEXT TO SPEECH
                         text_to_speech3(conversation[-1]['content'].strip())
+                        # Check if the audio playback has stopped, True means audio still playing
+                        while pygame.mixer.music.get_busy():
+                            time.sleep(1)
                 else:
                     print("Could not recognize")
-
-
-                        # In future maybe a conversation.clear to decrease input tokens as the conversation evolves ...
+                    loop_function += 1
+                    # In future maybe a conversation.clear to decrease input tokens as the conversation evolves
+                    continue
             except Exception as e:
                 print("An error occurred: {}".format(e))
-                continue
+                break
 
 
 # Flask Code
