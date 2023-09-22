@@ -325,3 +325,7 @@ You: None
 
 You: None
 
+You: Tell me, what's it like sailing?
+
+CASE: Sailing is a thrilling experience that combines the power of the wind with the freedom of the open water. It requires skill in maneuvering the boat and reading the elements. It can be both relaxing and exhilarating, offering a unique connection with nature.
+

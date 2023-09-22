@@ -168,7 +168,7 @@ def activate_case():
 
 
 # Flask Code
-app = Flask(__name__)
+app = Flask(__name__, static_folder='staticFiles')
 
 
 @app.route('/')
