@@ -107,7 +107,12 @@ def append_to_log(text):
         f.write(text + "\n")
 
 
-# Function right at the Cognitive Complexity limit of 15.
+# Waits for the audio playback to stop
+def wait_for_audio():
+    while pygame.mixer.music.get_busy():
+        time.sleep(1)
+
+
 def activate_case():
     loop_function = 1
     loop_threshold = 2 # tries to recognise voice this many times
@@ -126,9 +131,9 @@ def activate_case():
                     readyToWork = activate_assistant()
                     text_to_speech2(readyToWork)
                     print(readyToWork)
-                    time.sleep(waitSec)
-                    print("waited" + str(waitSec) + "seconds for readyToWork to end")
+                    wait_for_audio()
                     # Record audio
+                    print("Listening for prompt..")
                     recognizer = sr.Recognizer()
                     with sr.Microphone() as source:
                         source.pause_threshold = 1
@@ -157,9 +162,7 @@ def activate_case():
 
                         # AI RESPONSE TO SPEECH - TTS - TEXT TO SPEECH
                         text_to_speech3(conversation[-1]['content'].strip())
-                        # Check if the audio playback has stopped, True means audio still playing
-                        while pygame.mixer.music.get_busy():
-                            time.sleep(1)
+                        wait_for_audio()
                 else:
                     print("Could not recognize")
                     loop_function += 1
