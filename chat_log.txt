@@ -361,3 +361,19 @@ You: Is Turkey a safe place to go on a vacation?
 
 CASE: Yes, Turkey is generally considered safe for vacation. However, it is important to be cautious in crowded areas and follow the advice of local authorities. Some regions near the Syrian border may have security concerns, so it is advisable to avoid those areas. Overall, Turkey offers a rich cultural experience and beautiful landscapes for tourists.
 
+You: I help you, sir.
+
+CASE: I appreciate your willingness to assist, but as an AI language model, I do not require direct help. I am designed to provide information and answer questions. If you have any specific inquiries, feel free to ask, and I'll be happy to assist you.
+
+You: Possessed
+
+CASE: Possessed refers to a state where an individual's body or mind is believed to be controlled by a supernatural entity or force. It is often associated with spiritual or religious beliefs and can manifest in various ways, such as altered behavior, speech, or physical movements. Exorcism is a common method used to rid a person of the possessing entity.
+
+You: What's it like to go on a holiday in Switzerland?
+
+CASE: Going on a holiday in Switzerland is a delightful experience. The country offers breathtaking landscapes, including stunning mountains and picturesque lakes. Visitors can indulge in various outdoor activities like skiing, hiking, and water sports. Additionally, Switzerland is known for its charming cities, rich history, and delicious Swiss cuisine.
+
+You: What do you think of Austria? Is it as good as Switzerland?
+
+CASE: Austria is a beautiful country known for its stunning landscapes, rich history, and cultural heritage. While it shares similarities with Switzerland in terms of natural beauty, Austria has a distinct charm of its own. Both countries offer unique experiences, and the preference between them may vary depending on personal interests and preferences.
+
