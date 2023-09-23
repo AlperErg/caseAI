@@ -9,6 +9,7 @@ import pyaudio
 import pygame
 from flask import Flask, jsonify, render_template
 
+interaction_counter = 0
 # openai api key for whisper speech recognition api
 os.environ['OPENAI_API_KEY'] = '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'
 # seconds to wait after tts is initiated
@@ -79,7 +80,7 @@ def text_to_speech3(text):
 # print('{0}: {1}\n'.format(conversation[-1]['role'].strip(), conversation[-1]['content'].strip()))
 # text_to_speech(conversation[-1]['content'].strip())
 
-interaction_counter = 1
+
 def activate_assistant():
     starting_chat_phrases = ["Yes Sir, how may I assist you?",
                              "What can I do for you today",
@@ -91,9 +92,9 @@ def activate_assistant():
     continued_chat_phrases = ["yes?", "yes sir", "yes boss"]
 
     random_chat = ""
-    if (interaction_counter <= 1):
+    if (interaction_counter <= 0):
         random_chat = random.choice(starting_chat_phrases)
-    if (interaction_counter > 1):
+    elif (interaction_counter > 0):
         random_chat = random.choice(continued_chat_phrases)
     else:
         print("Interaction counter error")
@@ -113,23 +114,26 @@ def wait_for_audio():
 
 
 def activate_case():
+    global interaction_counter
     loop_function = 1
     loop_threshold = 2 # tries to recognise voice this many times
     text_to_speech("welcome, TARS AI activated.")
     time.sleep(3)
     while loop_function <= loop_threshold:
-        # wait for users to say "Case"
+        # wait for users to say the keyword
         print("Listening...")
         recognizer = sr.Recognizer()
         with sr.Microphone() as source:
             audio = recognizer.listen(source)
             try:
                 transcription = recognizer.recognize_whisper_api(audio)
-                if "tars" in transcription.lower():
+                if ("case" in transcription.lower()) or ("gays" in transcription.lower()):
                     filename = "input.wav"
                     readyToWork = activate_assistant()
                     text_to_speech2(readyToWork)
                     print(readyToWork)
+                    interaction_counter += 1
+                    print("Interaction counter: " + str(interaction_counter))
                     wait_for_audio()
                     # Record audio
                     print("Listening for prompt..")
@@ -152,8 +156,6 @@ def activate_case():
                         prompt = text + ". Make your answer at most 4 sentences long, prioritise giving only the most critical information related to my prompt when shortening your answer, and do not reference this instruction about conciseness in your answer."
                         conversation.append({'role': 'user', 'content': prompt})
                         conversation = ChatGPT_conversation(conversation)
-
-                        print('{0}: {1}\n'.format(conversation[-1]['role'].strip(), conversation[-1]['content'].strip()))
                         print(f"CASE says: {conversation[-1]['content'].strip()}")
                         append_to_log(f"CASE: {conversation[-1]['content'].strip()}\n")
 

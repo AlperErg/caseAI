@@ -377,3 +377,16 @@ You: What do you think of Austria? Is it as good as Switzerland?
 
 CASE: Austria is a beautiful country known for its stunning landscapes, rich history, and cultural heritage. While it shares similarities with Switzerland in terms of natural beauty, Austria has a distinct charm of its own. Both countries offer unique experiences, and the preference between them may vary depending on personal interests and preferences.
 
+You: I am getting errors in my code. What are the best steps to check if the code is working properly for Python?
+
+CASE: To check if your Python code is working properly, follow these steps:
+
+1. Review the error messages: Understand the specific error messages being displayed and identify the line(s) where the errors occur.
+2. Debug the code: Use print statements or a debugger to inspect the values of variables and determine if they are as expected.
+3. Test with sample inputs: Run the code with different inputs, including edge cases, to verify if it produces the desired output.
+4. Refactor and optimize: Analyze the code for any logical or syntax errors, and make necessary improvements to enhance its efficiency and readability.
+
+You: I now fixed my code. Thank you very much.
+
+CASE: Glad to hear that your code is fixed. You're welcome!
+
