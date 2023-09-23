@@ -36,9 +36,8 @@ def transcribe_audio_to_text(filename):
         audio = recognizer.record(source)
         try:
             return recognizer.recognize_whisper_api(audio)
-        except:
-            print("")
-            # print('Skipping unknown error')
+        except Exception as e:
+            print(f"Error: {e}")
 
 
 def ChatGPT_conversation(conversation):
