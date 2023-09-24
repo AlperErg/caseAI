@@ -5,21 +5,18 @@ import time
 import openai
 import speech_recognition as sr
 from gtts import gTTS
-import pyaudio
 import pygame
 from flask import Flask, jsonify, render_template
 
 interaction_counter = 0
 # openai api key for whisper speech recognition api
-os.environ['OPENAI_API_KEY'] = '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'
+os.environ['OPENAI_API_KEY'] = ''
 # seconds to wait after tts is initiated
 waitSec = 2
 # initialise pygame
 pygame.mixer.init()
-# Microsoft API key
-bingkey = "0ac803691b254f76a1e3fd666855bfcb"
 # Set OpenAI API key
-openai.api_key = "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"
+openai.api_key = ""
 # Set OpenAI model id
 model_id = 'gpt-3.5-turbo'
 # Counter for interacting with the bot, including name calls and gpt calls
