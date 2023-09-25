@@ -124,7 +124,7 @@ def activate_case():
             audio = recognizer.listen(source)
             try:
                 transcription = recognizer.recognize_whisper_api(audio)
-                if ("case" in transcription.lower()) or ("tars" in transcription.lower()):
+                if ("case" in transcription.lower()) or ("gays" in transcription.lower()):
                     filename = "input.wav"
                     readyToWork = activate_assistant()
                     text_to_speech2(readyToWork)
@@ -171,22 +171,23 @@ def activate_case():
                 break
 
 
-def create_app():
-    app = Flask(__name__, static_folder='staticFiles')
+# Flask Code
+app = Flask(__name__, static_folder='staticFiles')
 
-    @app.route('/')
-    def index():
-        return render_template('index.html')
 
-    @app.route('/run_python_code')
-    def run_python_code():
-        # Your Python function to execute when the button is clicked
-        activate_case()
-        result = "Python code executed successfully"
-        return jsonify({'message': result})
+@app.route('/')
+def index():
+    return render_template('index.html')
 
-    return app
+
+@app.route('/run_python_code')
+def run_python_code():
+    # Your Python function to execute when the button is clicked
+    activate_case()
+    result = "Python code executed successfully"
+    return jsonify({'message': result})
+
 
 if __name__ == '__main__':
-    app = create_app()
     app.run()
+# END OF FLASK CODE
