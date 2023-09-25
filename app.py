@@ -172,20 +172,22 @@ def activate_case():
                 break
 
 
+def create_app():
+    app = Flask(__name__, static_folder='staticFiles')
 
-app = Flask(__name__, static_folder='staticFiles')
+    @app.route('/')
+    def index():
+        return render_template('index.html')
 
-@app.route('/')
-def index():
-    return render_template('index.html')
+    @app.route('/run_python_code')
+    def run_python_code():
+        # Your Python function to execute when the button is clicked
+        activate_case()
+        result = "Python code executed successfully"
+        return jsonify({'message': result})
 
-@app.route('/run_python_code')
-def run_python_code():
-    # Your Python function to execute when the button is clicked
-    activate_case()
-    result = "Python code executed successfully"
-    return jsonify({'message': result})
-
+    return app
 
 if __name__ == '__main__':
+    app = create_app()
     app.run()
