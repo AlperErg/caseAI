@@ -11,16 +11,17 @@ from flask import Flask, jsonify, render_template
 interaction_counter = 0
 # openai api key for whisper speech recognition api
 os.environ['OPENAI_API_KEY'] = ''
-# seconds to wait after tts is initiated
-waitSec = 2
-# initialise pygame
-pygame.mixer.init()
 # Set OpenAI API key
 openai.api_key = ""
 # Set OpenAI model id
 model_id = 'gpt-3.5-turbo'
 # Counter for interacting with the bot, including name calls and gpt calls
 
+#connects pygame to a dummy sound device, to avoid an error message
+os.environ["DISPLAY"] = ":0.0"
+os.environ["SDL_AUDIODRIVER"] = "dummy"  # Use a dummy audio driver
+# initialise pygame
+pygame.mixer.init()
 
 
 def playtts(file):
