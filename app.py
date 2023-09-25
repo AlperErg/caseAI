@@ -10,13 +10,13 @@ from flask import Flask, jsonify, render_template
 
 interaction_counter = 0
 # openai api key for whisper speech recognition api
-os.environ['OPENAI_API_KEY'] = ''
+os.environ['OPENAI_API_KEY'] = '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'
 # seconds to wait after tts is initiated
 waitSec = 2
 # initialise pygame
 pygame.mixer.init()
 # Set OpenAI API key
-openai.api_key = ""
+openai.api_key = "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"
 # Set OpenAI model id
 model_id = 'gpt-3.5-turbo'
 # Counter for interacting with the bot, including name calls and gpt calls
@@ -161,6 +161,11 @@ def activate_case():
                         # AI RESPONSE TO SPEECH - TTS - TEXT TO SPEECH
                         text_to_speech3(conversation[-1]['content'].strip())
                         wait_for_audio()
+                # If the user says "enough" or "stop", the program will stop
+                elif ("enough" in transcription.lower()) or ("stop" in transcription.lower()) or ("thank you" in transcription.lower()):
+                    text_to_speech2("TARS AI deactivating, goodbye.")
+                    print("Stop command received, exiting program.")
+                    break
                 else:
                     print("Could not recognize")
                     loop_function += 1
