@@ -191,6 +191,7 @@ socketio = SocketIO(app)
 def index():
     return render_template('index.html')
 
+
 @app.route('/run_python_code')
 def run_python_code():
     # Your Python function to execute when the button is clicked
@@ -200,4 +201,4 @@ def run_python_code():
 
 
 if __name__ == '__main__':
-    app.run()
+    socketio.run(app)
