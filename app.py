@@ -7,6 +7,7 @@ import speech_recognition as sr
 from gtts import gTTS
 import pygame
 from flask import Flask, jsonify, render_template
+from flask_socketio import SocketIO
 
 interaction_counter = 0
 # openai api key for whisper speech recognition api
@@ -22,6 +23,16 @@ os.environ["DISPLAY"] = ":0.0"
 os.environ["SDL_AUDIODRIVER"] = "dummy"  # Use a dummy audio driver
 # initialise pygame
 pygame.mixer.init()
+
+# SocketIO
+# When the client emits the 'audio_data' event, the server's handle_audio function is called. 
+# Inside this function, you can process the audio data as needed. 
+# This might involve performing real-time analysis, audio transformations, or any other audio-related tasks.
+@socketio.on('audio_data')
+def handle_audio(audio_data):
+    # Process audio_data (e.g., perform audio analysis, transformation, etc.)
+    # Send processed audio data with the name processed_audio_data back to the client
+    socketio.emit('audio_response', processed_audio_data)
 
 
 def playtts(file):
@@ -174,6 +185,7 @@ def activate_case():
 
 
 app = Flask(__name__, static_folder='staticFiles')
+socketio = SocketIO(app)
 
 @app.route('/')
 def index():
