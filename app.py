@@ -24,6 +24,10 @@ os.environ["SDL_AUDIODRIVER"] = "dummy"  # Use a dummy audio driver
 # initialise pygame
 pygame.mixer.init()
 
+# Initialise Flask
+app = Flask(__name__, static_folder='staticFiles')
+socketio = SocketIO(app)
+
 # SocketIO
 # When the client emits the 'audio_data' event, the server's handle_audio function is called. 
 # Inside this function, you can process the audio data as needed. 
@@ -183,9 +187,6 @@ def activate_case():
                 break
 
 
-
-app = Flask(__name__, static_folder='staticFiles')
-socketio = SocketIO(app)
 
 @app.route('/')
 def index():
