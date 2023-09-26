@@ -121,6 +121,21 @@
   <script src="staticFiles/assets/dist/js/bootstrap.bundle.min.js"></script>
   <!--Socket.io Library for Client-Server bidirectional communication-->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+  <!--Audio output-->
+  <audio id="audio-element" controls autoplay></audio>
+  <script>
+    var socket = io.connect('http://' + document.domain + ':' + location.port);
+    var audioElement = document.getElementById('audio-element');
+
+    // Set up WebSocket event listener to receive audio data
+    socket.on('audio_response', function (audio_response) {
+        // Convert audioData to a Blob or an appropriate audio format
+        // Create an Object URL and set it as the audio element's source
+        var blob = new Blob([audioData], { type: 'audio/wav' });
+        var objectURL = URL.createObjectURL(blob);
+        audioElement.src = objectURL;
+    });
+  </script>
   <!--FLASK CODE, CLIENT SERVER COMMUNICATION-->
   <script>
     var socket = io.connect('http://' + document.domain + ':' + location.port);

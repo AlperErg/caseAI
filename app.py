@@ -32,7 +32,7 @@ pygame.mixer.init()
 def handle_audio(audio_data):
     # Process audio_data (e.g., perform audio analysis, transformation, etc.)
     # Send processed audio data with the name processed_audio_data back to the client
-    socketio.emit('audio_response', processed_audio_data)
+    socketio.emit('audio_response', audio_response)
 
 
 def playtts(file):
