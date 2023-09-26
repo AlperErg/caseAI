@@ -18,30 +18,23 @@ openai.api_key = ""
 model_id = 'gpt-3.5-turbo'
 # Counter for interacting with the bot, including name calls and gpt calls
 
-#connects pygame to a dummy sound device, to avoid an error message
-os.environ["DISPLAY"] = ":0.0"
-os.environ["SDL_AUDIODRIVER"] = "dummy"  # Use a dummy audio driver
+# connects pygame to a dummy sound device, to avoid an error message
+# os.environ["DISPLAY"] = ":0.0"
+# os.environ["SDL_AUDIODRIVER"] = "dummy"  # Use a dummy audio driver
 # initialise pygame
-pygame.mixer.init()
+# pygame.mixer.init()
 
 # Initialise Flask
 app = Flask(__name__, static_folder='staticFiles')
 socketio = SocketIO(app)
 
-# SocketIO
-# When the client emits the 'audio_data' event, the server's handle_audio function is called. 
-# Inside this function, you can process the audio data as needed. 
-# This might involve performing real-time analysis, audio transformations, or any other audio-related tasks.
-@socketio.on('audio_data')
-def handle_audio(audio_data):
-    # Process audio_data (e.g., perform audio analysis, transformation, etc.)
-    # Send processed audio data with the name processed_audio_data back to the client
-    socketio.emit('audio_response', audio_response)
 
 
 def playtts(file):
-    pygame.mixer.music.load(file)
-    pygame.mixer.music.play()
+    # old pygame code
+    # pygame.mixer.music.load(file)
+    # pygame.mixer.music.play()
+    socketio.emit('audio_response', file)
 
 
 def transcribe_audio_to_text(filename):
@@ -126,7 +119,12 @@ def wait_for_audio():
         time.sleep(1)
 
 
-def activate_case():
+# SocketIO
+# When the client emits the 'audio_data' event, the server's handle_audio function is called. 
+# Inside this function, you can process the audio data as needed. 
+# This might involve performing real-time analysis, audio transformations, or any other audio-related tasks.
+@socketio.on('audio_data')
+def activate_case(audio_data):
     global interaction_counter
     loop_function = 1
     loop_threshold = 2 # tries to recognise voice this many times
@@ -196,8 +194,11 @@ def index():
 @app.route('/run_python_code')
 def run_python_code():
     # Your Python function to execute when the button is clicked
-    activate_case()
-    result = "Python code executed successfully"
+    try:
+        activate_case()
+        result = "Python code executed successfully"
+    except Exception as e:
+        result = "An error occurred: {}".format(e)
     return jsonify({'message': result})
 
 
