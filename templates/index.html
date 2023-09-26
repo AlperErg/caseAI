@@ -124,29 +124,31 @@
   <!--FLASK CODE, CLIENT SERVER COMMUNICATION-->
   <script>
     var socket = io.connect('http://' + document.domain + ':' + location.port);
+    // set continuous audio stream
+    async function startAudioCapture() {
+      try {
+            const audioContext = new AudioContext();
+            const mediaStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            // Access to the microphone has been granted, and you can use the `stream` object to capture audio.
+            const audioSource = audioContext.createMediaStreamSource(mediaStream);
 
-    // Example: Listening for audio output from the server
-    socket.on('audio_response', function(data) {
-        // JS code to play the received audio data to the user
-    });
-    // continuous audio stream bound by the button
-    document.getElementById('executeButton').addEventListener('click', async function() {
-      const audioContext = new AudioContext();
-      const mediaStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const audioSource = audioContext.createMediaStreamSource(mediaStream);
+            const bufferSize = 4096; // Adjust buffer size as needed
+            const audioProcessorNode = audioContext.createScriptProcessor(bufferSize, 1, 1);
 
-      const bufferSize = 4096; // Adjust buffer size as needed
-      const audioProcessorNode = audioContext.createScriptProcessor(bufferSize, 1, 1);
+            audioProcessorNode.onaudioprocess = function (event) {
+                const audioData = event.inputBuffer.getChannelData(0); // Get audio data from the microphone
+                // Send audioData to the server via WebSocket (e.g., socket.emit('audio_data', audioData);)
+                socket.emit('audio_data', audioData);
+            };
 
-      audioProcessorNode.onaudioprocess = function (event) {
-          const audioData = event.inputBuffer.getChannelData(0); // Get audio data from the microphone
-
-          // Send audioData to the server via WebSocket (e.g., socket.emit('audio_data', audioData);)
-      };
-
-      audioSource.connect(audioProcessorNode);
-      audioProcessorNode.connect(audioContext.destination);
-
+            audioSource.connect(audioProcessorNode);
+            audioProcessorNode.connect(audioContext.destination);
+      } catch (error) {
+          // The user denied access or an error occurred.
+          console.error('Error accessing microphone:', error);
+      }
+    }
+    document.getElementById('executeButton').addEventListener('click', function() {
       // Send a request to the Flask endpoint
       fetch('/run_python_code')
           .then(response => response.json())
