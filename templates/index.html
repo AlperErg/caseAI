@@ -112,6 +112,8 @@
           <button id="executeButton" type="button" class="btn btn-light">Start Talking</button>
         </p>
         <p id="resultMessage"></p>
+        <!--Audio output-->
+        <audio id="audio-element" controls autoplay></audio>
       </main>
 
       <footer class="mt-auto text-white-50">
@@ -121,24 +123,9 @@
   <script src="staticFiles/assets/dist/js/bootstrap.bundle.min.js"></script>
   <!--Socket.io Library for Client-Server bidirectional communication-->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
-  <!--Audio output-->
-  <audio id="audio-element" controls autoplay></audio>
-  <script>
-    var socket = io.connect('http://' + document.domain + ':' + location.port);
-
-    // Set up WebSocket event listener to receive audio data
-    socket.on('audio_output', function (audioData) {
-        var audioElement = document.getElementById('audio-element');
-        // Convert audioData to a Blob or an appropriate audio format
-        // Create an Object URL and set it as the audio element's source
-        var blob = new Blob([audioData], { type: 'audio/wav' });
-        var objectURL = URL.createObjectURL(blob);
-        audioElement.src = objectURL;
-    });
-  </script>
   <!--FLASK CODE, CLIENT SERVER COMMUNICATION-->
   <script>
-    var socket = io.connect('http://' + document.domain + ':' + location.port);
+    var socket = io.connect('https://' + document.domain + ':' + location.port);
     // set continuous audio stream
     async function startAudioCapture() {
       try {
@@ -163,16 +150,25 @@
           console.error('Error accessing microphone:', error);
       }
     }
+    // Set up WebSocket event listener to receive audio data and output audio
+    socket.on('audio_output', function (audioData) {
+        var audioElement = document.getElementById('audio-element');
+        // Convert audioData to a Blob or an appropriate audio format
+        // Create an Object URL and set it as the audio element's source
+        var blob = new Blob([audioData], { type: 'audio/wav' });
+        var objectURL = URL.createObjectURL(blob);
+        audioElement.src = objectURL;
+    });
     document.getElementById('executeButton').addEventListener('click', function() {
-      // Send a request to the Flask endpoint
-      fetch('/run_python_code')
-          .then(response => response.json())
-          .then(data => {
-              document.getElementById('resultMessage').textContent = data.message;
-          })
-          .catch(error => {
-              console.error('Error:', error);
-          });
+        // Send a request to the Flask endpoint
+        fetch('/run_python_code')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('resultMessage').textContent = data.message;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
     });
   </script>
 </body>

@@ -98,7 +98,7 @@ def activate_assistant():
     continued_chat_phrases = ["yes?", "yes sir", "yes boss"]
 
     random_chat = ""
-    if (interaction_counter <= 0):
+    if (interaction_counter == 0):
         random_chat = random.choice(starting_chat_phrases)
     elif (interaction_counter > 0):
         random_chat = random.choice(continued_chat_phrases)
