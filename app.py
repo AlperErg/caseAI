@@ -27,7 +27,7 @@ model_id = 'gpt-3.5-turbo'
 # Initialise Flask
 app = Flask(__name__, static_folder='staticFiles')
 socketio = SocketIO(app)
-
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'default_secret_key') # reverts to 'default_secret_key' if no secret key is found
 
 
 def playtts(file):
