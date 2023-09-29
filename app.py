@@ -135,8 +135,8 @@ def activate_case(audio_data):
         # wait for users to say the keyword
         print("Listening...")
         recognizer = sr.Recognizer()
-        with sr.Microphone() as source:
-            audio = recognizer.listen(source)
+        with sr.AudioFile(audio_data) as source:
+            audio = recognizer.record(source)
             try:
                 transcription = recognizer.recognize_whisper_api(audio)
                 if ("case" in transcription.lower()) or ("tars" in transcription.lower()):
@@ -190,6 +190,13 @@ def activate_case(audio_data):
 @app.route('/')
 def index():
     return render_template('index.html')
+
+
+@socketio.on('connect')
+def handle_connect():
+    print('WebSocket connection established')
+    result = "WebSocket connection established"
+    return jsonify({'message': result})
 
 
 @app.route('/run_python_code')
