@@ -188,13 +188,11 @@ def activate_case(audio_data):
 
 # Flask routes
 @app.route('/')
-@cors.cross_origin()
 def index():
     return render_template('index.html')
 
 
 @app.route('/run_python_code')
-@cors.cross_origin()
 def run_python_code():
     # Your Python function to execute when the button is clicked
     try:
