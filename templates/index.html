@@ -127,7 +127,7 @@
   <script>
     document.addEventListener('DOMContentLoaded', function () {
         var socket = io.connect('wss://caseai-e4620cbfb447.herokuapp.com/');
-            // set continuous audio stream
+        // Send audio INPUT to server via WebSocket 
         async function startAudioCapture() {
           try {
             const audioContext = new AudioContext();
@@ -139,9 +139,9 @@
             const audioProcessorNode = audioContext.createScriptProcessor(bufferSize, 1, 1);
 
             audioProcessorNode.onaudioprocess = function (event) {
-              const audioData = event.inputBuffer.getChannelData(0); // Get audio data from the microphone
+              const audioInput = event.inputBuffer.getChannelData(0); // Get audio data from the microphone
               // Send audioData to the server via WebSocket (e.g., socket.emit('audio_data', audioData);)
-              socket.emit('audio_data', audioData);
+              socket.emit('audio_input', audioInput);
             };
 
             audioSource.connect(audioProcessorNode);
@@ -151,12 +151,12 @@
             console.error('Error accessing microphone:', error);
           }
         }
-        // Set up WebSocket event listener to receive audio data and output audio
-        socket.on('audio_data', function (audioData) {
+        // WebSocket event listener to OUTPUT audio to client
+        socket.on('audio_output', function (audioOutput) {
             var audioElement = document.getElementById('audio-element');
             // Convert audioData to a Blob or an appropriate audio format
             // Create an Object URL and set it as the audio element's source
-            var blob = new Blob([audioData], { type: 'audio/mp3' });
+            var blob = new Blob([audioOutput], { type: 'audio/mp3' });
             var objectURL = URL.createObjectURL(blob);
             audioElement.src = objectURL;
         });

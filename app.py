@@ -16,7 +16,6 @@ os.environ['OPENAI_API_KEY'] = ''
 openai.api_key = ""
 # Set OpenAI model id
 model_id = 'gpt-3.5-turbo'
-# Counter for interacting with the bot, including name calls and gpt calls
 
 # connects pygame to a dummy sound device, to avoid an error message
 # os.environ["DISPLAY"] = ":0.0"
@@ -34,7 +33,7 @@ def playtts(file):
     # old pygame code
     # pygame.mixer.music.load(file)
     # pygame.mixer.music.play()
-    socketio.emit('audio_response', file)
+    socketio.emit('audio_output', file)
 
 
 def transcribe_audio_to_text(filename):
@@ -121,8 +120,8 @@ def wait_for_audio():
 
 # SocketIO
 # When the client emits the 'audio_data' event, the server's handle_audio function is called. 
-# Inside this function, you can process the audio data as needed. 
-# This might involve performing real-time analysis, audio transformations, or any other audio-related tasks.
+# Inside this function, the processing happens.  
+
 @socketio.on('audio_data')
 def activate_case(audio_data):
     global interaction_counter
@@ -185,7 +184,7 @@ def activate_case(audio_data):
                 break
 
 
-
+# Flask routes
 @app.route('/')
 def index():
     return render_template('index.html')
