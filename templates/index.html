@@ -152,11 +152,11 @@
           }
         }
         // Set up WebSocket event listener to receive audio data and output audio
-        socket.on('audio_output', function (audioData) {
+        socket.on('audio_data', function (audioData) {
             var audioElement = document.getElementById('audio-element');
             // Convert audioData to a Blob or an appropriate audio format
             // Create an Object URL and set it as the audio element's source
-            var blob = new Blob([audioData], { type: 'audio/wav' });
+            var blob = new Blob([audioData], { type: 'audio/mp3' });
             var objectURL = URL.createObjectURL(blob);
             audioElement.src = objectURL;
         });
