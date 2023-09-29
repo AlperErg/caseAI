@@ -8,6 +8,7 @@ from gtts import gTTS
 import pygame
 from flask import Flask, jsonify, render_template
 from flask_socketio import SocketIO
+from flask_cors import CORS
 
 interaction_counter = 0
 # openai api key for whisper speech recognition api
@@ -26,6 +27,7 @@ model_id = 'gpt-3.5-turbo'
 # Initialise Flask
 app = Flask(__name__, static_folder='staticFiles')
 socketio = SocketIO(app)
+cors = CORS(app, origins=['http://caseai-e4620cbfb447.herokuapp.com/', 'https://caseai-e4620cbfb447.herokuapp.com/'])
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'default_secret_key') # reverts to 'default_secret_key' if no secret key is found
 
 
@@ -186,11 +188,13 @@ def activate_case(audio_data):
 
 # Flask routes
 @app.route('/')
+@cors.cross_origin()
 def index():
     return render_template('index.html')
 
 
 @app.route('/run_python_code')
+@cors.cross_origin()
 def run_python_code():
     # Your Python function to execute when the button is clicked
     try:
@@ -199,6 +203,11 @@ def run_python_code():
     except Exception as e:
         result = "An error occurred: {}".format(e)
     return jsonify({'message': result})
+
+
+@socketio.on_error() # handles all namespaces without an explicit error handler
+def handle_error(e):
+    print('An error occurred:', e)
 
 
 if __name__ == '__main__':
