@@ -14,7 +14,7 @@ interaction_counter = 0
 # openai api key for whisper speech recognition api
 os.environ['OPENAI_API_KEY'] = ''
 # Set OpenAI API key
-openai.api_key = ""
+openai.api_key = os.environ.get('OPENAI_API_KEY', 'default_key')
 # Set OpenAI model id
 model_id = 'gpt-3.5-turbo'
 
@@ -27,7 +27,9 @@ model_id = 'gpt-3.5-turbo'
 # Initialise Flask
 app = Flask(__name__, static_folder='staticFiles')
 socketio = SocketIO(app)
-cors = CORS(app, origins=['http://caseai-e4620cbfb447.herokuapp.com/', 'https://caseai-e4620cbfb447.herokuapp.com/'])
+# Flask-CORS, allows cross-origin requests to the Flask app, allows all Cross-origin requests by default with only app constructor.
+cors = CORS(app)
+
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'default_secret_key') # reverts to 'default_secret_key' if no secret key is found
 
 
