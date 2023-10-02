@@ -2,3 +2,4 @@
 *.wav
 __pycache__/
 chat_log.txt
+.vscode/

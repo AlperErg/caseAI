@@ -1,11 +1,13 @@
 import random
 import os
 import time
+import io
 # External Libraries that need to be installed on the device
 import openai
 import speech_recognition as sr
 from gtts import gTTS
 import pygame
+from pydub import AudioSegment
 from flask import Flask, jsonify, render_template
 from flask_socketio import SocketIO
 from flask_cors import CORS
@@ -26,18 +28,18 @@ model_id = 'gpt-3.5-turbo'
 
 # Initialise Flask
 app = Flask(__name__, static_folder='staticFiles')
-socketio = SocketIO(app)
+socketio = SocketIO(app, logger=True, engineio_logger=True)
 # Flask-CORS, allows cross-origin requests to the Flask app, allows all Cross-origin requests by default with only app constructor.
 cors = CORS(app)
 
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'default_secret_key') # reverts to 'default_secret_key' if no secret key is found
 
 
-def playtts(file):
+def playtts(audioOutput):
     # old pygame code
     # pygame.mixer.music.load(file)
     # pygame.mixer.music.play()
-    socketio.emit('audio_output', file)
+    socketio.emit('audio_output', audioOutput)
 
 
 def transcribe_audio_to_text(filename):
@@ -127,7 +129,7 @@ def wait_for_audio():
 # Inside this function, the processing happens.  
 
 @socketio.on('audio_data')
-def activate_case(audio_data):
+def activate_case(data):
     global interaction_counter
     loop_function = 1
     loop_threshold = 2 # tries to recognise voice this many times
@@ -137,7 +139,7 @@ def activate_case(audio_data):
         # wait for users to say the keyword
         print("Listening...")
         recognizer = sr.Recognizer()
-        with sr.AudioFile(audio_data) as source:
+        with sr.Microphone() as source:
             audio = recognizer.record(source)
             try:
                 transcription = recognizer.recognize_whisper_api(audio)
@@ -212,9 +214,21 @@ def run_python_code():
     return jsonify({'message': result})
 
 
+@app.route('/test_audio_output')
+def test_audio_output():
+    # Your Python function to execute when the button is clicked
+    try:
+        text_to_speech("Testing audio output")
+        result = "Python code executed"
+    except Exception as e:
+        result = "An error occurred with audio output: {}".format(e)
+    return jsonify({'message': result})
+
+
 @socketio.on_error() # handles all namespaces without an explicit error handler
 def handle_error(e):
     print('An error occurred:', e)
+    return jsonify({'message': 'An error occurred: {}'.format(e)})
 
 
 if __name__ == '__main__':
