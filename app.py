@@ -127,6 +127,7 @@ def wait_for_audio():
 # When the client emits the 'audio_data' event, the server's handle_audio function is called. 
 # Inside this function, the processing happens.  
 def start_interaction():
+    jsonify({'message': "Started interaction"})
     @socketio.on('audio_input')
     def activate_case(audio_data):
         jsonify({'message': "Audio input received"})
