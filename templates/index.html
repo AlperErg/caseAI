@@ -132,24 +132,30 @@
         function startAudioCapture() {
           try {
             const audioContext = new AudioContext();
-            const mediaStream = navigator.mediaDevices.getUserMedia({ audio: true });
-            // Access to the microphone has been granted, and you can use the `stream` object to capture audio.
-            const audioSource = audioContext.createMediaStreamSource(mediaStream);
+            navigator.mediaDevices.getUserMedia({ audio: true })
+              .then(function(mediaStream) {
+                // Access to the microphone has been granted, and you can use the `mediaStream` object to capture audio.
+                const audioSource = audioContext.createMediaStreamSource(mediaStream);
 
-            const bufferSize = 4096; // Adjust buffer size as needed
-            const audioProcessorNode = audioContext.createScriptProcessor(bufferSize, 1, 1);
+                const bufferSize = 4096; // Adjust buffer size as needed
+                const audioProcessorNode = audioContext.createScriptProcessor(bufferSize, 1, 1);
 
-            audioProcessorNode.onaudioprocess = function (event) {
-              const audioInput = event.inputBuffer.getChannelData(0); // Get audio data from the microphone
-              // Send audioData to the server via WebSocket (e.g., socket.emit('audio_data', audioData);)
-              socket.emit('audio_input', audioInput);
-            };
+                audioProcessorNode.onaudioprocess = function (event) {
+                  const audioInput = event.inputBuffer.getChannelData(0); // Get audio data from the microphone
+                  // Send audioData to the server via WebSocket (e.g., socket.emit('audio_data', audioData);)
+                  socket.emit('audio_input', audioInput);
+                };
 
-            audioSource.connect(audioProcessorNode);
-            audioProcessorNode.connect(audioContext.destination);
+                audioSource.connect(audioProcessorNode);
+                audioProcessorNode.connect(audioContext.destination);
+              })
+              .catch(function(error) {
+                // The user denied access or an error occurred.
+                console.error('Error accessing microphone:', error);
+              });
           } catch (error) {
-            // The user denied access or an error occurred.
-            console.error('Error accessing microphone:', error);
+            // The AudioContext is not supported.
+            console.error('Error creating AudioContext:', error);
           }
         }
         // WebSocket event listener to OUTPUT audio to client
