@@ -172,6 +172,7 @@
               console.error('Error getting sound permission:', error);
             }
         });
+        // Start Talk Button
         document.getElementById('executeButton').addEventListener('click', function() {
             // Ask for microphone permissions
             navigator.mediaDevices.getUserMedia({ audio: true })
@@ -192,15 +193,16 @@
                 console.error('Error accessing microphone:', error);
               });
           });
+          // Test Output Button
           document.getElementById('testOutputButton').addEventListener('click', function() {
-            fetch('/test_audio_output')
-              .then(response => response.json())
-              .then(data => {
-                document.getElementById('resultMessage').textContent = data.message;
-              })
-              .catch(error => {
-                console.error('Error:', error);
-              });
+              fetch('/test_audio_output')
+                .then(response => response.json())
+                .then(data => {
+                  document.getElementById('resultMessage').textContent = data.message;
+                })
+                .catch(error => {
+                  console.error('Error:', error);
+                });
           });
     });
   </script>

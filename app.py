@@ -35,10 +35,11 @@ cors = CORS(app)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'default_secret_key') # reverts to 'default_secret_key' if no secret key is found
 
 
-def playtts(audioOutput):
+def playtts(audiomp3):
     # old pygame code
     # pygame.mixer.music.load(file)
     # pygame.mixer.music.play()
+    audioOutput = audiomp3
     socketio.emit('audio_output', audioOutput)
 
 
@@ -127,67 +128,68 @@ def wait_for_audio():
 # SocketIO
 # When the client emits the 'audio_data' event, the server's handle_audio function is called. 
 # Inside this function, the processing happens.  
-
-@socketio.on('audio_data')
-def activate_case(data):
-    global interaction_counter
-    loop_function = 1
-    loop_threshold = 2 # tries to recognise voice this many times
-    text_to_speech("welcome, TARS AI activated.")
-    time.sleep(3)
-    while loop_function <= loop_threshold:
-        # wait for users to say the keyword
-        print("Listening...")
-        recognizer = sr.Recognizer()
-        with sr.Microphone() as source:
-            audio = recognizer.record(source)
-            try:
-                transcription = recognizer.recognize_whisper_api(audio)
-                if ("case" in transcription.lower()) or ("tars" in transcription.lower()):
-                    filename = "input.wav"
-                    readyToWork = activate_assistant()
-                    text_to_speech2(readyToWork)
-                    print(readyToWork)
-                    interaction_counter += 1
-                    print("Interaction counter: " + str(interaction_counter))
-                    wait_for_audio()
-                    # Record audio
-                    print("Listening for prompt..")
-                    recognizer = sr.Recognizer()
-                    with sr.Microphone() as source:
-                        source.pause_threshold = 1
-                        audio = recognizer.listen(source, timeout=30)
-                        with open(filename, "wb") as f:
-                            f.write(audio.get_wav_data())
-
-                    # Transcribe audio to text
-                    text = transcribe_audio_to_text(filename)
-                    print(f"You said: {text}")
-                    append_to_log(f"You: {text}\n")
-                    if text:
-
-                        conversation = []
-                        # RESPONSE GENERATION - GPT API
-
-                        prompt = text + ". Make your answer at most 4 sentences long, prioritise giving only the most critical information related to my prompt when shortening your answer, and do not reference this instruction about conciseness in your answer."
-                        conversation.append({'role': 'user', 'content': prompt})
-                        conversation = ChatGPT_conversation(conversation)
-                        print(f"CASE says: {conversation[-1]['content'].strip()}")
-                        append_to_log(f"CASE: {conversation[-1]['content'].strip()}\n")
-
-                        # Read response using text-to-speech
-
-                        # AI RESPONSE TO SPEECH - TTS - TEXT TO SPEECH
-                        text_to_speech3(conversation[-1]['content'].strip())
+def start_interaction():
+    @socketio.on('audio_input')
+    def activate_case(audio_data):
+        jsonify({'message': "Audio input received"})
+        global interaction_counter
+        loop_function = 1
+        loop_threshold = 2 # tries to recognise voice this many times
+        text_to_speech("welcome, TARS AI activated.")
+        time.sleep(3)
+        while loop_function <= loop_threshold:
+            # wait for users to say the keyword
+            print("Listening...")
+            recognizer = sr.Recognizer()
+            with sr.Microphone() as source:
+                audio = recognizer.record(source)
+                try:
+                    transcription = recognizer.recognize_whisper_api(audio)
+                    if ("case" in transcription.lower()) or ("tars" in transcription.lower()):
+                        filename = "input.wav"
+                        readyToWork = activate_assistant()
+                        text_to_speech2(readyToWork)
+                        print(readyToWork)
+                        interaction_counter += 1
+                        print("Interaction counter: " + str(interaction_counter))
                         wait_for_audio()
-                else:
-                    print("Could not recognize")
-                    loop_function += 1
-                    # In future maybe a conversation.clear to decrease input tokens as the conversation evolves
-                    continue
-            except Exception as e:
-                print("An error occurred: {}".format(e))
-                break
+                        # Record audio
+                        print("Listening for prompt..")
+                        recognizer = sr.Recognizer()
+                        with sr.Microphone() as source:
+                            source.pause_threshold = 1
+                            audio = recognizer.listen(source, timeout=30)
+                            with open(filename, "wb") as f:
+                                f.write(audio.get_wav_data())
+
+                        # Transcribe audio to text
+                        text = transcribe_audio_to_text(filename)
+                        print(f"You said: {text}")
+                        append_to_log(f"You: {text}\n")
+                        if text:
+
+                            conversation = []
+                            # RESPONSE GENERATION - GPT API
+
+                            prompt = text + ". Make your answer at most 4 sentences long, prioritise giving only the most critical information related to my prompt when shortening your answer, and do not reference this instruction about conciseness in your answer."
+                            conversation.append({'role': 'user', 'content': prompt})
+                            conversation = ChatGPT_conversation(conversation)
+                            print(f"CASE says: {conversation[-1]['content'].strip()}")
+                            append_to_log(f"CASE: {conversation[-1]['content'].strip()}\n")
+
+                            # Read response using text-to-speech
+
+                            # AI RESPONSE TO SPEECH - TTS - TEXT TO SPEECH
+                            text_to_speech3(conversation[-1]['content'].strip())
+                            wait_for_audio()
+                    else:
+                        print("Could not recognize")
+                        loop_function += 1
+                        # In future maybe a conversation.clear to decrease input tokens as the conversation evolves
+                        continue
+                except Exception as e:
+                    print("An error occurred: {}".format(e))
+                    break
 
 
 # Flask routes
@@ -207,7 +209,7 @@ def handle_connect():
 def run_python_code():
     # Your Python function to execute when the button is clicked
     try:
-        activate_case()
+        start_interaction()
         result = "Python code executed successfully"
     except Exception as e:
         result = "An error occurred: {}".format(e)
