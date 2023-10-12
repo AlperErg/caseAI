@@ -13,8 +13,6 @@ from flask_socketio import SocketIO
 from flask_cors import CORS
 
 interaction_counter = 0
-# openai api key for whisper speech recognition api
-os.environ['OPENAI_API_KEY'] = ''
 # Set OpenAI API key
 openai.api_key = os.environ.get('OPENAI_API_KEY', 'default_key')
 # Set OpenAI model id
