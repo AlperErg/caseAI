@@ -27,7 +27,7 @@ model_id = 'gpt-3.5-turbo'
 # pygame.mixer.init()
 
 # Initialise Flask
-app = Flask(__name__, static_folder='staticFiles')
+app = Flask(__name__, static_folder='staticFiles', debug=True)
 socketio = SocketIO(app, logger=True, engineio_logger=True)
 # Flask-CORS, allows cross-origin requests to the Flask app, allows all Cross-origin requests by default with only app constructor.
 cors = CORS(app)
