@@ -1,6 +1,7 @@
 import random
 import os
 import time
+import logging
 import io
 # External Libraries that need to be installed on the device
 import openai
@@ -9,7 +10,7 @@ from gtts import gTTS
 import pygame
 from pydub import AudioSegment
 from flask import Flask, jsonify, render_template
-from flask_socketio import SocketIO
+from flask_socketio import SocketIO, emit
 from flask_cors import CORS
 
 interaction_counter = 0
@@ -31,6 +32,19 @@ socketio = SocketIO(app, logger=True, engineio_logger=True)
 cors = CORS(app)
 
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'default_secret_key') # reverts to 'default_secret_key' if no secret key is found
+
+# Set up custom logger
+logger = logging.getLogger('my_logger')
+logger.setLevel(logging.DEBUG)
+
+
+class SocketIOHandler(logging.Handler):
+    def emit(self, record):
+        message = self.format(record)
+        socketio.emit('log', {'message': message})
+
+socketio_handler = SocketIOHandler()
+logger.addHandler(socketio_handler)
 
 
 def playtts(audiomp3):
@@ -127,10 +141,10 @@ def wait_for_audio():
 # When the client emits the 'audio_data' event, the server's handle_audio function is called. 
 # Inside this function, the processing happens.  
 def start_interaction():
-    jsonify({'message': "Started interaction"})
+    logger.info('Starting interaction')
     @socketio.on('audio_input')
     def activate_case(audio_data):
-        jsonify({'message': "Audio input received"})
+        logger.info('Audio received: {} bytes'.format(len(audio_data)))
         global interaction_counter
         loop_function = 1
         loop_threshold = 2 # tries to recognise voice this many times
@@ -221,8 +235,10 @@ def test_audio_output():
     try:
         text_to_speech("Testing audio output")
         result = "Python code executed"
+        logger.info(result)
     except Exception as e:
         result = "An error occurred with audio output: {}".format(e)
+        logger.info(result)
     return jsonify({'message': result})
 
 
@@ -230,6 +246,13 @@ def test_audio_output():
 def handle_error(e):
     print('An error occurred:', e)
     return jsonify({'message': 'An error occurred: {}'.format(e)})
+
+
+# SocketIO event handler for logging messages
+@socketio.on('log')
+def handle_log(data):
+    message = data['message']
+    app.logger.info(message)
 
 
 if __name__ == '__main__':

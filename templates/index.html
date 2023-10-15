@@ -105,17 +105,19 @@
         </div>
       </header>
 
-      <main class="px-3">
+      <main class="px-3" style="margin: 1em;">
         <h1>Siri who? TARS is here.</h1>
         <p class="lead">Meet the ultimate voice assistant. TARS harnesses the full power of AI to give answers to any question you can imagine. Become a superhero—start talking now for free.</p>
         <p class="lead">
           <button id="executeButton" type="button" class="btn btn-light">Start Talking</button>
         </p>
         <p id="resultMessage"></p>
-        <!--Audio output-->
+        <div id="log" class="col-8"style="width: 30%;"></div>
         <button id="testOutputButton" type="button" class="btn btn-light">Test Output</button>
-        <audio id="audio-element" controls autoplay></audio>
       </main>
+      <div class="d-flex justify-content-center">
+        <audio id="audio-element" controls autoplay></audio>
+      </div>
 
       <footer class="mt-auto text-white-50">
         <p>Early Production Beta. Created by <a href="https://github.com/AlperErg" class="text-white">@AlperErg</a>. &copy;2023 All rights reserved.</p>
@@ -204,6 +206,10 @@
                   console.error('Error:', error);
                 });
           });
+          socket.on('log', function(data) {
+              console.log('Received log message:', data.message);
+              $('#log').append('<p>' + data.message + '</p>');
+          });          
     });
   </script>
 </body>
