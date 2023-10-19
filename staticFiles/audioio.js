@@ -11,13 +11,14 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('testOutputButton').addEventListener('click', function() {
         fetch('/test_audio_output')
             fetch('/welcome.mp3')
-            .then(response => response.blob())
-            .then(blob => {
-                const objectURL = URL.createObjectURL(blob);
-                audioPlayer.src = objectURL;
-            })
-            .catch(error => console.error('Error fetching audio file:', error))
+                .then(response => response.blob())
+                .then(blob => {
+                    const objectURL = URL.createObjectURL(blob);
+                    audioPlayer.src = objectURL;
+                })
+                .catch(error => console.error('Error fetching audio file:', error))
 
+                
             .then(response => response.json())
             .then(data => {
             document.getElementById('resultMessage').textContent = data.message;
