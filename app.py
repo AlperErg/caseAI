@@ -3,13 +3,12 @@ import os
 import time
 import logging
 import io
-# External Libraries that need to be installed on the device
+# External Libraries
 import openai
 import speech_recognition as sr
 from gtts import gTTS
-import pygame
 from pydub import AudioSegment
-from flask import Flask, jsonify, render_template
+from flask import Flask, jsonify, render_template, send_file
 from flask_socketio import SocketIO, emit
 from flask_cors import CORS
 
@@ -47,14 +46,6 @@ socketio_handler = SocketIOHandler()
 logger.addHandler(socketio_handler)
 
 
-def playtts(audiomp3):
-    # old pygame code
-    # pygame.mixer.music.load(file)
-    # pygame.mixer.music.play()
-    audioOutput = audiomp3
-    socketio.emit('audio_output', audioOutput)
-
-
 def transcribe_audio_to_text(filename):
     recognizer = sr.Recognizer()
     with sr.AudioFile(filename) as source:
@@ -81,19 +72,16 @@ def ChatGPT_conversation(conversation):
 def text_to_speech(text):
     tts = gTTS(text, lang='en', slow=False)
     tts.save("welcome.mp3")
-    playtts("welcome.mp3")
 
 
 def text_to_speech2(text):
     tts = gTTS(text, lang='en', slow=False)
     tts.save("welcome2.mp3")
-    playtts("welcome2.mp3")
 
 
 def text_to_speech3(text):
     tts = gTTS(text, lang='en', slow=False)
     tts.save("welcome3.mp3")
-    playtts("welcome3.mp3")
 
 # Conversation example
 # conversation = []
@@ -133,8 +121,7 @@ def append_to_log(text):
 
 # Waits for the audio playback to stop
 def wait_for_audio():
-    while pygame.mixer.music.get_busy():
-        time.sleep(1)
+    time.sleep(1)
 
 
 # SocketIO
@@ -233,14 +220,16 @@ def run_python_code():
 def test_audio_output():
     # Your Python function to execute when the button is clicked
     try:
+        # text_to_speech("Testing audio output") saves the audio file, but does not play it, we will play the audio seperately.
         text_to_speech("Testing audio output")
         result = "Python code executed"
         logger.info(result)
+        jsonify({'message': result})
+        audio_path = 'welcome.mp3'
     except Exception as e:
         result = "An error occurred with audio output: {}".format(e)
         logger.info(result)
-    return jsonify({'message': result})
-
+    return send_file(audio_path, as_attachment=True)
 
 @socketio.on_error() # handles all namespaces without an explicit error handler
 def handle_error(e):

@@ -116,7 +116,7 @@
         <button id="testOutputButton" type="button" class="btn btn-light">Test Output</button>
       </main>
       <div class="d-flex justify-content-center">
-        <audio id="audio-element" controls autoplay></audio>
+        <audio id="audio-player" src="welcome.mp3"></audio>
       </div>
 
       <footer class="mt-auto text-white-50">
@@ -127,90 +127,6 @@
   <!--Socket.io Library for Client-Server bidirectional communication-->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
   <!--FLASK CODE, CLIENT SERVER COMMUNICATION-->
-  <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        var socket = io.connect('wss://caseai-e4620cbfb447.herokuapp.com/');
-        // Send audio INPUT to server via WebSocket 
-        function startAudioCapture() {
-          try {
-            const audioContext = new AudioContext();
-            navigator.mediaDevices.getUserMedia({ audio: true })
-              .then(function(mediaStream) {
-                // Access to the microphone has been granted, and you can use the `mediaStream` object to capture audio.
-                const audioSource = audioContext.createMediaStreamSource(mediaStream);
-
-                const bufferSize = 4096; // Adjust buffer size as needed
-                const audioProcessorNode = audioContext.createScriptProcessor(bufferSize, 1, 1);
-
-                audioProcessorNode.onaudioprocess = function (event) {
-                  const audioInput = event.inputBuffer.getChannelData(0); // Get audio data from the microphone
-                  // Send audioData to the server via WebSocket (e.g., socket.emit('audio_data', audioData);)
-                  socket.emit('audio_input', audioInput);
-                };
-
-                audioSource.connect(audioProcessorNode);
-                audioProcessorNode.connect(audioContext.destination);
-              })
-              .catch(function(error) {
-                // The user denied access or an error occurred.
-                console.error('Error accessing microphone:', error);
-              });
-          } catch (error) {
-            // The AudioContext is not supported.
-            console.error('Error creating AudioContext:', error);
-          }
-        }
-        // WebSocket event listener to OUTPUT audio to client
-        socket.on('audio_output', function (audioOutput) {
-           try {
-              var audioElement = document.getElementById('audio-element');
-              // Convert audioData to a Blob or an appropriate audio format
-              // Create an Object URL and set it as the audio element's source
-              var blob = new Blob([audioOutput], { type: 'audio/mp3' });
-              var objectURL = URL.createObjectURL(blob);
-              audioElement.src = objectURL;
-            } catch (error) {
-              // The user denied access or an error occurred.
-              console.error('Error getting sound permission:', error);
-            }
-        });
-        // Start Talk Button
-        document.getElementById('executeButton').addEventListener('click', function() {
-            // Ask for microphone permissions
-            navigator.mediaDevices.getUserMedia({ audio: true })
-              .then(() => {
-                // Start audio capture
-                startAudioCapture();
-                // Send a request to the Flask endpoint
-                fetch('/run_python_code')
-                  .then(response => response.json())
-                  .then(data => {
-                    document.getElementById('resultMessage').textContent = data.message;
-                  })
-                  .catch(error => {
-                    console.error('Error:', error);
-                  });
-              })
-              .catch(error => {
-                console.error('Error accessing microphone:', error);
-              });
-          });
-          // Test Output Button
-          document.getElementById('testOutputButton').addEventListener('click', function() {
-              fetch('/test_audio_output')
-                .then(response => response.json())
-                .then(data => {
-                  document.getElementById('resultMessage').textContent = data.message;
-                })
-                .catch(error => {
-                  console.error('Error:', error);
-                });
-          });
-          socket.on('log', function(data) {
-              console.log('Received log message:', data.message);
-              $('#log').append('<p>' + data.message + '</p>');
-          });          
-    });
-  </script>
+  <script src="staticFiles/audioio.js"></script>
 </body>
 </html>
