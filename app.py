@@ -97,8 +97,8 @@ def activate_assistant():
     starting_chat_phrases = ["Yes Sir, how may I assist you?",
                              "What can I do for you today",
                              "How can I help you, Sir?",
-                             "This is TARS speaking, how can I help you sir?",
-                             "TARS is now active, ready to assist.",
+                             "This is CASE speaking, how can I help you sir?",
+                             "CASE is now active, ready to assist.",
                              "Good day sir, what can I do for you.",
                              "What is on your mind, sir?"]
     continued_chat_phrases = ["yes?", "yes sir", "yes boss"]
@@ -129,14 +129,14 @@ def wait_for_audio():
 # Inside this function, the processing happens.  
 def start_interaction():
     logger.info('Starting interaction')
+    text_to_speech("welcome, CASE AI activated.")
+    time.sleep(3)
     @socketio.on('audio_input')
     def activate_case(audio_data):
         logger.info('Audio received: {} bytes'.format(len(audio_data)))
         global interaction_counter
         loop_function = 1
         loop_threshold = 2 # tries to recognise voice this many times
-        text_to_speech("welcome, TARS AI activated.")
-        time.sleep(3)
         while loop_function <= loop_threshold:
             # wait for users to say the keyword
             print("Listening...")
@@ -145,7 +145,7 @@ def start_interaction():
                 audio = recognizer.record(source)
                 try:
                     transcription = recognizer.recognize_whisper_api(audio)
-                    if ("case" in transcription.lower()) or ("tars" in transcription.lower()):
+                    if ("case" in transcription.lower()) or ("gays" in transcription.lower()):
                         filename = "input.wav"
                         readyToWork = activate_assistant()
                         text_to_speech2(readyToWork)
