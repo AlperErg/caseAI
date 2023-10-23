@@ -195,8 +195,6 @@ def index():
 def handle_connect():
     print('WebSocket connection established')
     send_log('WebSocket connection established')
-    result = "WebSocket connection established"
-    return jsonify({'message': result})
 
 
 @app.route('/run_python_code')
