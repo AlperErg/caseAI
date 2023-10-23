@@ -39,10 +39,6 @@ logger.setLevel(logging.DEBUG)
 
 def send_log(message):
     socketio.emit('log', {'data': message})
-    
-
-socketio_handler = SocketIOHandler()
-logger.addHandler(socketio_handler)
 
 
 def transcribe_audio_to_text(filename):
