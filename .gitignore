@@ -1,4 +1,5 @@
-*.mp3
+welcome3.mp3
+welcome2.mp3
 *.wav
 __pycache__/
 chat_log.txt
