@@ -32,13 +32,9 @@ cors = CORS(app)
 
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'default_secret_key') # reverts to 'default_secret_key' if no secret key is found
 
-# Set up custom logger
-logger = logging.getLogger('my_logger')
-logger.setLevel(logging.DEBUG)
-
 
 def send_log(message):
-    socketio.emit('log', {'data': message})
+    socketio.emit('message', {'message': message})
 
 
 def transcribe_audio_to_text(filename):
