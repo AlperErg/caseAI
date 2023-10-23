@@ -1,9 +1,9 @@
 // Flask-SocketIO connection to Heroku web server
 var socket = io.connect('wss://caseai-e4620cbfb447.herokuapp.com/');
 // using web audio API: https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API
-const audioContext = new AudioContext();
 
 document.addEventListener('DOMContentLoaded', function () {
+    const audioContext = new AudioContext();
     const audioPlayer = document.getElementById('audio-player');
     //TODO - add event listener to INPUT audio from client
 
