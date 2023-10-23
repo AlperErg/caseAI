@@ -205,7 +205,7 @@ def run_python_code():
         result = "Python code executed successfully"
     except Exception as e:
         result = "An error occurred: {}".format(e)
-    return jsonify({'message': result})
+    return send_log(result)
 
 
 @app.route('/test_audio_output')

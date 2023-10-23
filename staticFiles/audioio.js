@@ -9,7 +9,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Test Output Button
     document.getElementById('testOutputButton').addEventListener('click', function() {
-        fetch('/test_audio_output')
         fetch('/welcome.mp3')
           .then(response => response.blob())
           .then(blob => {
