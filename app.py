@@ -37,10 +37,9 @@ logger = logging.getLogger('my_logger')
 logger.setLevel(logging.DEBUG)
 
 
-class SocketIOHandler(logging.Handler):
-    def emit(self, record):
-        message = self.format(record)
-        socketio.emit('log', {'message': message})
+def send_log(message):
+    socketio.emit('log', {'data': message})
+    
 
 socketio_handler = SocketIOHandler()
 logger.addHandler(socketio_handler)
@@ -128,18 +127,18 @@ def wait_for_audio():
 # When the client emits the 'audio_data' event, the server's handle_audio function is called. 
 # Inside this function, the processing happens.  
 def start_interaction():
-    logger.info('Starting interaction')
+    send_log('Starting interaction')
     text_to_speech("welcome, CASE AI activated.")
     time.sleep(3)
     @socketio.on('audio_input')
     def activate_case(audio_data):
-        logger.info('Audio received: {} bytes'.format(len(audio_data)))
+        send_log('Audio received: {} bytes'.format(len(audio_data)))
         global interaction_counter
         loop_function = 1
         loop_threshold = 2 # tries to recognise voice this many times
         while loop_function <= loop_threshold:
             # wait for users to say the keyword
-            print("Listening...")
+            send_log("Listening...")
             recognizer = sr.Recognizer()
             with sr.Microphone() as source:
                 audio = recognizer.record(source)
@@ -149,12 +148,12 @@ def start_interaction():
                         filename = "input.wav"
                         readyToWork = activate_assistant()
                         text_to_speech2(readyToWork)
-                        print(readyToWork)
+                        send_log(readyToWork)
                         interaction_counter += 1
-                        print("Interaction counter: " + str(interaction_counter))
+                        send_log("Interaction counter: " + str(interaction_counter))
                         wait_for_audio()
                         # Record audio
-                        print("Listening for prompt..")
+                        send_log("Listening for prompt..")
                         recognizer = sr.Recognizer()
                         with sr.Microphone() as source:
                             source.pause_threshold = 1
@@ -164,7 +163,7 @@ def start_interaction():
 
                         # Transcribe audio to text
                         text = transcribe_audio_to_text(filename)
-                        print(f"You said: {text}")
+                        send_log(f"You said: {text}")
                         append_to_log(f"You: {text}\n")
                         if text:
 
@@ -184,11 +183,13 @@ def start_interaction():
                             wait_for_audio()
                     else:
                         print("Could not recognize")
+                        send_log("Could not recognize")
                         loop_function += 1
                         # In future maybe a conversation.clear to decrease input tokens as the conversation evolves
                         continue
                 except Exception as e:
                     print("An error occurred: {}".format(e))
+                    send_log("An error occurred: {}".format(e))
                     break
 
 
@@ -201,6 +202,7 @@ def index():
 @socketio.on('connect')
 def handle_connect():
     print('WebSocket connection established')
+    send_log('WebSocket connection established')
     result = "WebSocket connection established"
     return jsonify({'message': result})
 
@@ -223,25 +225,21 @@ def test_audio_output():
         # text_to_speech("Testing audio output") saves the audio file, but does not play it, we will play the audio seperately.
         text_to_speech("Testing audio output")
         result = "Python code executed"
-        logger.info(result)
+        send_log(result)
         jsonify({'message': result})
         audio_path = 'welcome.mp3'
     except Exception as e:
         result = "An error occurred with audio output: {}".format(e)
-        logger.info(result)
+        send_log(result)
     return send_file(audio_path, as_attachment=True)
 
 @socketio.on_error() # handles all namespaces without an explicit error handler
 def handle_error(e):
     print('An error occurred:', e)
+    send_log('An error occurred: {}'.format(e))
     return jsonify({'message': 'An error occurred: {}'.format(e)})
 
 
-# SocketIO event handler for logging messages
-@socketio.on('log')
-def handle_log(data):
-    message = data['message']
-    app.logger.info(message)
 
 
 if __name__ == '__main__':

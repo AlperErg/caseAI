@@ -4,6 +4,12 @@ var socket = io.connect('wss://caseai-e4620cbfb447.herokuapp.com/');
 const audioContext = new AudioContext();
 
 document.addEventListener('DOMContentLoaded', function () {
+    // Log messages from the server
+    const logDisplay = document.getElementById('log-display');
+    socket.on('log', (data) => {
+      console.log(data); // Replace with your code to show the log message to the user
+      logDisplay.textContent = data.log;
+    });
     const audioPlayer = document.getElementById('audio-player');
     //TODO - add event listener to INPUT audio from client
 
@@ -45,9 +51,5 @@ document.addEventListener('DOMContentLoaded', function () {
           .catch(error => {
             console.error('Error accessing microphone:', error);
           });
-      });
-      socket.on('log', function(data) {
-          console.log('Received log message:', data.message);
-          $('#log').append('<p>' + data.message + '</p>');
-      });          
+      });     
 });
