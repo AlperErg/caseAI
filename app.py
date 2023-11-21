@@ -3,20 +3,20 @@ import os
 import time
 # External Libraries that need to be installed on the device
 import openai
+import pyaudio
 import speech_recognition as sr
 from gtts import gTTS
 import pygame
 from flask import Flask, jsonify, render_template
 
 interaction_counter = 0
-# openai api key for whisper speech recognition api
-os.environ['OPENAI_API_KEY'] = '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'
+# Set OpenAI API key
+os.environ['OPENAI_API_KEY'] = 'YOUR_OPENAI_API_KEY_HERE'
+openai.api_key = os.getenv("OPENAI_API_KEY")
 # seconds to wait after tts is initiated
 waitSec = 2
 # initialise pygame
 pygame.mixer.init()
-# Set OpenAI API key
-openai.api_key = "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"
 # Set OpenAI model id
 model_id = 'gpt-3.5-turbo'
 # Counter for interacting with the bot, including name calls and gpt calls
@@ -124,7 +124,7 @@ def activate_case():
             audio = recognizer.listen(source)
             try:
                 transcription = recognizer.recognize_whisper_api(audio)
-                if ("case" in transcription.lower()) or ("gays" in transcription.lower()):
+                if ("hey case" in transcription.lower()) or ("hey gays" in transcription.lower()):
                     filename = "input.wav"
                     readyToWork = activate_assistant()
                     text_to_speech2(readyToWork)
