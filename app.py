@@ -9,9 +9,14 @@ from gtts import gTTS
 import pygame
 from flask import Flask, jsonify, render_template
 
-interaction_counter = 0
+
+def get_api_key():
+    api_key = input("Please enter your OpenAI API key: ")
+    return api_key
+
+
 # Set OpenAI API key
-os.environ['OPENAI_API_KEY'] = 'YOUR_OPENAI_API_KEY_HERE'
+os.environ['OPENAI_API_KEY'] = get_api_key()
 openai.api_key = os.getenv("OPENAI_API_KEY")
 # seconds to wait after tts is initiated
 waitSec = 2
@@ -76,16 +81,17 @@ def text_to_speech3(text):
 # conversation = ChatGPT_conversation(conversation)
 # print('{0}: {1}\n'.format(conversation[-1]['role'].strip(), conversation[-1]['content'].strip()))
 # text_to_speech(conversation[-1]['content'].strip())
+interaction_counter = 0
 
 
 def activate_assistant():
     starting_chat_phrases = ["Yes Sir, how may I assist you?",
                              "What can I do for you today",
-                             "How can I help you, Sir?",
-                             "This is TARS speaking, how can I help you sir?",
-                             "TARS is now active, ready to assist.",
+                             "How can I help you Sir?",
+                             "This is Case speaking, how can I help you sir?",
+                             "Case is now active, ready to assist.",
                              "Good day sir, what can I do for you.",
-                             "What is on your mind, sir?"]
+                             "What is on your mind sir?"]
     continued_chat_phrases = ["yes?", "yes sir", "yes boss"]
 
     random_chat = ""
@@ -114,7 +120,7 @@ def activate_case():
     global interaction_counter
     loop_function = 1
     loop_threshold = 2 # tries to recognise voice this many times
-    text_to_speech("welcome, TARS AI activated.")
+    text_to_speech("Welcome, Case AI activated.")
     time.sleep(3)
     while loop_function <= loop_threshold:
         # wait for users to say the keyword
@@ -124,7 +130,8 @@ def activate_case():
             audio = recognizer.listen(source)
             try:
                 transcription = recognizer.recognize_whisper_api(audio)
-                if ("hey case" in transcription.lower()) or ("hey gays" in transcription.lower()):
+                print("\rYou said: " + transcription)
+                if ("case" in transcription.lower().strip()):
                     filename = "input.wav"
                     readyToWork = activate_assistant()
                     text_to_speech2(readyToWork)
@@ -161,13 +168,13 @@ def activate_case():
                         # AI RESPONSE TO SPEECH - TTS - TEXT TO SPEECH
                         text_to_speech3(conversation[-1]['content'].strip())
                         wait_for_audio()
-                # If the user says "enough" or "stop", the program will stop
+                # If the user says "enough", "stop" or "thank you" in their sentence while the program is waiting for the activation phrase, the program will stop
                 elif ("enough" in transcription.lower()) or ("stop" in transcription.lower()) or ("thank you" in transcription.lower()):
-                    text_to_speech2("TARS AI deactivating, goodbye.")
-                    print("Stop command received, exiting program.")
+                    text_to_speech2("Case AI is now shutting down. Goodbye!")
+                    print("\nStop command received, exiting program.")
                     break
                 else:
-                    print("Could not recognize")
+                    print("\nCould not recognize voice, please try again.")
                     loop_function += 1
                     # In future maybe a conversation.clear to decrease input tokens as the conversation evolves
                     continue
