@@ -1,8 +1,9 @@
 import random
 import os
 import time
+import subprocess
 # External Libraries that need to be installed on the device
-import openai
+from openai import OpenAI
 import pyaudio
 import speech_recognition as sr
 from gtts import gTTS
@@ -10,78 +11,63 @@ import pygame
 from flask import Flask, jsonify, render_template
 
 
-def get_api_key():
-    api_key = input("Please enter your OpenAI API key: ")
-    return api_key
+# List of required pip plugins
+required_plugins = ['openai', 'pyaudio', 'speechRecognition', 'gtts', 'pygame']
+# Check if required plugins are installed
+installed_plugins = []
+for plugin in required_plugins:
+    try:
+        print('Checking if {0} is installed...'.format(plugin))
+        # Check if the plugin is installed by running the command 'pip show <plugin>'
+        subprocess.check_output(['pip', 'show', plugin])
+        installed_plugins.append(plugin)
+    except subprocess.CalledProcessError:
+        # If the plugin is not installed, install it using the command 'pip install <plugin>'
+        print('{0} is not installed. Installing now...'.format(plugin))
+        subprocess.call(['pip', 'install', plugin])
+
+if len(installed_plugins) == len(required_plugins):
+    print("All plugins are installed successfully.")
 
 
 # Set OpenAI API key
-os.environ['OPENAI_API_KEY'] = get_api_key()
-openai.api_key = os.getenv("OPENAI_API_KEY")
-# seconds to wait after tts is initiated
-waitSec = 2
-# initialise pygame
-pygame.mixer.init()
+api_key = input("Please enter your OpenAI API key: ")
+os.environ['OPENAI_API_KEY'] = api_key # YOUR OPENAI API KEY IN THE QUOTES
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+
 # Set OpenAI model id
 model_id = 'gpt-3.5-turbo'
-# Counter for interacting with the bot, including name calls and gpt calls
-
-
+# Interaction counter to keep track of how many times the user has interacted with the assistant
+interaction_counter = 0
 
 def playtts(file):
+    pygame.mixer.init()
     pygame.mixer.music.load(file)
     pygame.mixer.music.play()
+    while pygame.mixer.music.get_busy() == True:
+        continue
+    pygame.mixer.quit()
 
 
-def transcribe_audio_to_text(filename):
+def speech_to_text(filename):
     recognizer = sr.Recognizer()
     with sr.AudioFile(filename) as source:
         audio = recognizer.record(source)
         try:
-            return recognizer.recognize_whisper_api(audio)
+            return recognizer.recognize_google(audio)
         except Exception as e:
             print(f"Error: {e}")
 
 
-def ChatGPT_conversation(conversation):
-    response = openai.ChatCompletion.create(
-        model=model_id,
-        messages=conversation,
-        max_tokens=4000,
-        temperature=0.5
+def output_audio(text):
+    file = "output.mp3"
+    response = client.audio.speech.create(
+        model="tts-1",
+        voice="alloy",
+        input=text,
     )
-    api_usage = response['usage']
-    print('Total API token consumed: {0}'.format(api_usage['total_tokens']))
-    conversation.append({'role': response.choices[0].message.role, 'content': response.choices[0].message.content})
-    return conversation
-
-
-def text_to_speech(text):
-    tts = gTTS(text, lang='en', slow=False)
-    tts.save("welcome.mp3")
-    playtts("welcome.mp3")
-
-
-def text_to_speech2(text):
-    tts = gTTS(text, lang='en', slow=False)
-    tts.save("welcome2.mp3")
-    playtts("welcome2.mp3")
-
-
-def text_to_speech3(text):
-    tts = gTTS(text, lang='en', slow=False)
-    tts.save("welcome3.mp3")
-    playtts("welcome3.mp3")
-
-# Conversation example
-# conversation = []
-# conversation.append({'role': 'user','content':'Please, Act like the robot AI TARS from the movie Interstellar, '
-#                                             'introduce yourself in 1 short sentence. In your answer, do not reference'
-#                                             ' this prompt and chat.'})
-# conversation = ChatGPT_conversation(conversation)
-# print('{0}: {1}\n'.format(conversation[-1]['role'].strip(), conversation[-1]['content'].strip()))
-# text_to_speech(conversation[-1]['content'].strip())
-interaction_counter = 0
+    response.stream_to_file(file)
+    playtts(file)
 
 
 def activate_assistant():
@@ -110,67 +96,60 @@ def append_to_log(text):
         f.write(text + "\n")
 
 
-# Waits for the audio playback to stop
-def wait_for_audio():
-    while pygame.mixer.music.get_busy():
-        time.sleep(1)
-
-
 def activate_case():
     global interaction_counter
-    loop_function = 1
-    loop_threshold = 2 # tries to recognise voice this many times
-    text_to_speech("Welcome, Case AI activated.")
-    time.sleep(3)
+    loop_function = 0
+    loop_threshold = 3 # runs voice recognition this many times
+    output_audio("Welcome, Case AI activated.")
     while loop_function <= loop_threshold:
-        # wait for users to say the keyword
+        # keyword detection
         print("Listening...")
         recognizer = sr.Recognizer()
         with sr.Microphone() as source:
             audio = recognizer.listen(source)
             try:
-                transcription = recognizer.recognize_whisper_api(audio)
+                transcription = recognizer.recognize_google(audio)
                 print("\rYou said: " + transcription)
                 if ("case" in transcription.lower().strip()):
                     filename = "input.wav"
-                    readyToWork = activate_assistant()
-                    text_to_speech2(readyToWork)
-                    print(readyToWork)
+                    ready_to_work = activate_assistant()
+                    output_audio(ready_to_work)
+                    print(ready_to_work)
                     interaction_counter += 1
                     print("Interaction counter: " + str(interaction_counter))
-                    wait_for_audio()
-                    # Record audio
+                    # Record GPT input audio
                     print("Listening for prompt..")
                     recognizer = sr.Recognizer()
                     with sr.Microphone() as source:
                         source.pause_threshold = 1
+                        # Change prompt recording timeout here. By default its set to 30 seconds. More recording, more tokens used.
                         audio = recognizer.listen(source, timeout=30)
                         with open(filename, "wb") as f:
                             f.write(audio.get_wav_data())
 
-                    # Transcribe audio to text
-                    text = transcribe_audio_to_text(filename)
+                    # Transcribe audio to text - STT - SPEECH TO TEXT
+                    text = speech_to_text(filename)
                     print(f"You said: {text}")
                     append_to_log(f"You: {text}\n")
                     if text:
-
                         conversation = []
                         # RESPONSE GENERATION - GPT API
-
                         prompt = text + ". Make your answer at most 4 sentences long, prioritise giving only the most critical information related to my prompt when shortening your answer, and do not reference this instruction about conciseness in your answer."
                         conversation.append({'role': 'user', 'content': prompt})
-                        conversation = ChatGPT_conversation(conversation)
-                        print(f"CASE says: {conversation[-1]['content'].strip()}")
-                        append_to_log(f"CASE: {conversation[-1]['content'].strip()}\n")
-
-                        # Read response using text-to-speech
-
+                        response = client.chat.completions.create(
+                            model=model_id,
+                            messages=conversation,
+                            temperature=0.5,
+                        )
+                        response_message = response.choices[0].message.content
+                        print(f"CASE says: {response_message.strip()}")
+                        append_to_log(f"CASE: {response_message.strip()}\n")
                         # AI RESPONSE TO SPEECH - TTS - TEXT TO SPEECH
-                        text_to_speech3(conversation[-1]['content'].strip())
-                        wait_for_audio()
+                        output_audio(response_message.strip())
+                        loop_function = 0       
                 # If the user says "enough", "stop" or "thank you" in their sentence while the program is waiting for the activation phrase, the program will stop
                 elif ("enough" in transcription.lower()) or ("stop" in transcription.lower()) or ("thank you" in transcription.lower()):
-                    text_to_speech2("Case AI is now shutting down. Goodbye!")
+                    output_audio("Case AI is now shutting down. Goodbye!")
                     print("\nStop command received, exiting program.")
                     break
                 else:
@@ -196,7 +175,7 @@ def index():
 def run_python_code():
     # Your Python function to execute when the button is clicked
     activate_case()
-    result = "Python code executed successfully"
+    result = "Case has been run."
     return jsonify({'message': result})
 
 
