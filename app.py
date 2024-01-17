@@ -11,28 +11,7 @@ import pygame
 from flask import Flask, jsonify, render_template
 
 
-# List of required pip plugins
-required_plugins = ['openai', 'pyaudio', 'speechRecognition', 'gtts', 'pygame']
-# Check if required plugins are installed
-installed_plugins = []
-for plugin in required_plugins:
-    try:
-        print('Checking if {0} is installed...'.format(plugin))
-        # Check if the plugin is installed by running the command 'pip show <plugin>'
-        subprocess.check_output(['pip', 'show', plugin])
-        installed_plugins.append(plugin)
-    except subprocess.CalledProcessError:
-        # If the plugin is not installed, install it using the command 'pip install <plugin>'
-        print('{0} is not installed. Installing now...'.format(plugin))
-        subprocess.call(['pip', 'install', plugin])
-
-if len(installed_plugins) == len(required_plugins):
-    print("All plugins are installed successfully.")
-
-
-# Set OpenAI API key
-api_key = input("Please enter your OpenAI API key: ")
-os.environ['OPENAI_API_KEY'] = api_key # YOUR OPENAI API KEY IN THE QUOTES
+os.environ['OPENAI_API_KEY'] = "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" # YOUR OPENAI API KEY IN THE QUOTES
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 # Set OpenAI model id
@@ -99,7 +78,7 @@ def append_to_log(text):
 def activate_case():
     global interaction_counter
     loop_function = 0
-    loop_threshold = 3 # runs voice recognition this many times
+    loop_threshold = 5 # runs voice recognition this many times
     output_audio("Welcome, Case AI activated.")
     while loop_function <= loop_threshold:
         # keyword detection
