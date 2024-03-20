@@ -11,7 +11,7 @@ import pygame
 from flask import Flask, jsonify, render_template
 
 
-os.environ['OPENAI_API_KEY'] = "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" # YOUR OPENAI API KEY IN THE QUOTES
+os.environ['OPENAI_API_KEY'] = "sk-" # YOUR OPENAI API KEY IN THE QUOTES
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 # Set OpenAI model id
