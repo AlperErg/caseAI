@@ -12,7 +12,7 @@ from flask import Flask, jsonify, render_template
 
 
 # List of required pip plugins
-required_plugins = ['openai', 'pyaudio', 'speechRecognition', 'gtts', 'pygame']
+required_plugins = ['openai', 'pyaudio', 'numpy', 'speechRecognition', 'gtts', 'pygame']
 # Check if required plugins are installed
 installed_plugins = []
 for plugin in required_plugins:
