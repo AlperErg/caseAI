@@ -70,6 +70,7 @@ def output_audio(text):
     playtts(file)
 
 
+interaction_counter = 0
 def activate_assistant():
     starting_chat_phrases = ["Yes Sir, how may I assist you?",
                              "What can I do for you today",
@@ -96,58 +97,22 @@ def append_to_log(text):
         f.write(text + "\n")
 
 
+
+recognizer = sr.Recognizer()
 def activate_case():
-    global interaction_counter
     loop_function = 0
     loop_threshold = 3 # runs voice recognition this many times
     output_audio("Welcome, Case AI activated.")
     while loop_function <= loop_threshold:
         # keyword detection
         print("Listening...")
-        recognizer = sr.Recognizer()
         with sr.Microphone() as source:
             audio = recognizer.listen(source)
             try:
                 transcription = recognizer.recognize_google(audio)
                 print("\rYou said: " + transcription)
                 if ("case" in transcription.lower().strip()):
-                    filename = "input.wav"
-                    ready_to_work = activate_assistant()
-                    output_audio(ready_to_work)
-                    print(ready_to_work)
-                    interaction_counter += 1
-                    print("Interaction counter: " + str(interaction_counter))
-                    # Record GPT input audio
-                    print("Listening for prompt..")
-                    recognizer = sr.Recognizer()
-                    with sr.Microphone() as source:
-                        source.pause_threshold = 1
-                        # Change prompt recording timeout here. By default its set to 30 seconds. More recording, more tokens used.
-                        audio = recognizer.listen(source, timeout=30)
-                        with open(filename, "wb") as f:
-                            f.write(audio.get_wav_data())
-
-                    # Transcribe audio to text - STT - SPEECH TO TEXT
-                    text = speech_to_text(filename)
-                    print(f"You said: {text}")
-                    append_to_log(f"You: {text}\n")
-                    if text:
-                        conversation = []
-                        # RESPONSE GENERATION - GPT API
-                        prompt = text + ". Make your answer at most 4 sentences long, prioritise giving only the most critical information related to my prompt when shortening your answer, and do not reference this instruction about conciseness in your answer."
-                        conversation.append({'role': 'user', 'content': prompt})
-                        response = client.chat.completions.create(
-                            model=model_id,
-                            messages=conversation,
-                            temperature=0.5,
-                        )
-                        response_message = response.choices[0].message.content
-                        print(f"CASE says: {response_message.strip()}")
-                        append_to_log(f"CASE: {response_message.strip()}\n")
-                        # AI RESPONSE TO SPEECH - TTS - TEXT TO SPEECH
-                        output_audio(response_message.strip())
-                        loop_function = 0       
-                # If the user says "enough", "stop" or "thank you" in their sentence while the program is waiting for the activation phrase, the program will stop
+                    case_conversation()
                 elif ("enough" in transcription.lower()) or ("stop" in transcription.lower()) or ("thank you" in transcription.lower()):
                     output_audio("Case AI is now shutting down. Goodbye!")
                     print("\nStop command received, exiting program.")
@@ -155,12 +120,55 @@ def activate_case():
                 else:
                     print("\nCould not recognize voice, please try again.")
                     loop_function += 1
-                    # In future maybe a conversation.clear to decrease input tokens as the conversation evolves
-                    continue
             except Exception as e:
                 print("An error occurred: {}".format(e))
-                break
+            break
 
+
+def case_conversation():
+    global interaction_counter
+    filename = "input.wav"
+    ready_to_work = activate_assistant()
+    output_audio(ready_to_work)
+    print(ready_to_work)
+    interaction_counter += 1
+    print("Interaction counter: " + str(interaction_counter))
+    # Record GPT input audio
+    print("Listening for prompt..")
+    recognizer = sr.Recognizer()
+    with sr.Microphone() as source:
+        source.pause_threshold = 1
+        # Change prompt recording timeout here. By default its set to 30 seconds. More recording, more tokens used.
+        audio = recognizer.listen(source, timeout=30)
+        with open(filename, "wb") as f:
+            f.write(audio.get_wav_data())
+
+        # Transcribe audio to text - STT - SPEECH TO TEXT
+        text = speech_to_text(filename)
+        print(f"You said: {text}")
+        append_to_log(f"You: {text}\n")
+        if text:
+            conversation = []
+            # RESPONSE GENERATION - GPT API
+            prompt = text + ". Make your answer at most 4 sentences long, prioritise giving only the most critical information related to my prompt when shortening your answer, and do not reference this instruction about conciseness in your answer."
+            conversation.append({'role': 'user', 'content': prompt})
+            response = client.chat.completions.create(
+                model=model_id,
+                messages=conversation,
+                temperature=0.5,
+            )
+            response_message = response.choices[0].message.content
+            print(f"CASE says: {response_message.strip()}")
+            append_to_log(f"CASE: {response_message.strip()}\n")
+            # AI RESPONSE TO SPEECH - TTS - TEXT TO SPEECH
+            output_audio(response_message.strip())
+            # Continue the conversation unless the user wants to stop it
+            case_conversation()
+        elif ("stop" in text.lower()):
+            output_audio("Case AI is now shutting down. Goodbye!")
+            print("\nStop command received, exiting program.")
+        else:
+            print("Could not convert speech to text, please try again.")
 
 # Flask Code
 app = Flask(__name__, static_folder='staticFiles')
