@@ -1,7 +1,7 @@
 
 # CaseAI
 
-Voice-to-voice artificial intelligence assistant software that can be run in a Python IDE with a web interface. Powered by OpenAI's **GPT 4** and speech to text model as well as Google's **Google Speech Recognition** API.
+Voice-to-voice artificial intelligence assistant software that can be run in a Python IDE with a web interface. Powered by OpenAI's **GPT-4o** and speech to text model as well as Google's **Google Speech Recognition** API.
 
 #### Requirements
 

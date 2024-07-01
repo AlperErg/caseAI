@@ -36,7 +36,7 @@ os.environ['OPENAI_API_KEY'] = api_key # YOUR OPENAI API KEY IN THE QUOTES
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 # Set OpenAI model id
-model_id = 'gpt-3.5-turbo'
+model_id = 'gpt-4o'
 # Interaction counter to keep track of how many times the user has interacted with the assistant
 interaction_counter = 0
 
