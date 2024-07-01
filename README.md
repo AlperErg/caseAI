@@ -1,7 +1,7 @@
 
 # CaseAI
 
-Voice-to-voice artificial intelligence assistant software that can be run in a Python IDE with a web interface. Powered by OpenAI's **GPT 3.5 Turbo** and **Whisper** speech recognition APIs.
+Voice-to-voice artificial intelligence assistant software that can be run in a Python IDE with a web interface. Powered by OpenAI's **GPT 4** and speech to text model as well as Google's **Google Speech Recognition** API.
 
 #### Requirements
 
@@ -15,13 +15,15 @@ Voice-to-voice artificial intelligence assistant software that can be run in a P
 2. Run the application on a Python IDE of your choice.
 3. Input your OpenAI API key in the console.
 4. Access the web interface via the local IP given in the console.
-5. Press "Start Talking". You can now start talking with case by saying the call phrase **"Hey Case"** or **"Case"**.
+5. Press "Start Talking". You can now start talking with case by saying the call phrase **"Hey Case"**
+6. By saying case, a conversation is begun. You can ask endless questions to Case, and she will do her best to answer.
+7. To end the conversation, you need to say a sentence with **"stop"**.
 
 #### Features
 
 - You can call Case by any phrase including her name, like _**"What's up Case?"**_ or **_"Bonjour Case!"_**
-- You can end talking while Case is waiting for you to call her name by saying **"stop"** or **"thank you"** in your phrase.
-- Case will timeout if you don't talk to her, saving you many tokens. To start talking again, you only have to press the **Start Talking** button.
+- You can end talking while Case is waiting for you to call her name by saying **"stop"**.
+- Case will timeout if you don't talk to her, saving you many API tokens. To start talking again, you only have to press the **Start Talking** button.
 
 #### Support inquiries
 

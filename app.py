@@ -112,6 +112,12 @@ def activate_case():
                 transcription = recognizer.recognize_google(audio)
                 print("\rYou said: " + transcription)
                 if ("case" in transcription.lower().strip()):
+                    global interaction_counter
+                    ready_to_work = activate_assistant()
+                    output_audio(ready_to_work)
+                    print(ready_to_work)
+                    interaction_counter += 1
+                    print("Interaction counter: " + str(interaction_counter))
                     case_conversation()
                 elif ("enough" in transcription.lower()) or ("stop" in transcription.lower()) or ("thank you" in transcription.lower()):
                     output_audio("Case AI is now shutting down. Goodbye!")
@@ -126,13 +132,7 @@ def activate_case():
 
 
 def case_conversation():
-    global interaction_counter
     filename = "input.wav"
-    ready_to_work = activate_assistant()
-    output_audio(ready_to_work)
-    print(ready_to_work)
-    interaction_counter += 1
-    print("Interaction counter: " + str(interaction_counter))
     # Record GPT input audio
     print("Listening for prompt..")
     recognizer = sr.Recognizer()
@@ -147,7 +147,10 @@ def case_conversation():
         text = speech_to_text(filename)
         print(f"You said: {text}")
         append_to_log(f"You: {text}\n")
-        if text:
+        if ("stop" in text.lower()):
+            output_audio("Case AI is now shutting down. Goodbye!")
+            print("\nStop command received, exiting program.")
+        elif text:
             conversation = []
             # RESPONSE GENERATION - GPT API
             prompt = text + ". Make your answer at most 4 sentences long, prioritise giving only the most critical information related to my prompt when shortening your answer, and do not reference this instruction about conciseness in your answer."
@@ -164,9 +167,6 @@ def case_conversation():
             output_audio(response_message.strip())
             # Continue the conversation unless the user wants to stop it
             case_conversation()
-        elif ("stop" in text.lower()):
-            output_audio("Case AI is now shutting down. Goodbye!")
-            print("\nStop command received, exiting program.")
         else:
             print("Could not convert speech to text, please try again.")
 
